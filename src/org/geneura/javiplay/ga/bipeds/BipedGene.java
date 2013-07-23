@@ -8,6 +8,13 @@ import es.ugr.osgiliath.evolutionary.individual.Gene;
 
 public class BipedGene implements Gene, Cloneable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6170200659507270341L;
+	
+	
+	
 	ArrayList<MotorActions> actions;
 	int duration;
 

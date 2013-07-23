@@ -3,12 +3,9 @@ package org.geneura.javiplay.ga.bipeds;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javax.swing.plaf.basic.BasicSliderUI.ActionScroller;
-
 import org.geneura.javiplay.ga.bipeds.BipedMotorActions.MotorActions;
 
 import es.ugr.osgiliath.OsgiliathService;
-import es.ugr.osgiliath.algorithms.AlgorithmParameters;
 import es.ugr.osgiliath.evolutionary.basiccomponents.genomes.ListGenome;
 import es.ugr.osgiliath.evolutionary.elements.Mutation;
 import es.ugr.osgiliath.evolutionary.individual.Gene;

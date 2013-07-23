@@ -34,41 +34,15 @@ import org.geneura.javiplay.ga.bipeds.BipedMotorActions.MotorActions;
 import org.jbox2d.testbed.framework.TestbedFrame;
 import org.jbox2d.testbed.framework.TestbedModel;
 import org.jbox2d.testbed.framework.TestbedPanel;
-import org.jbox2d.testbed.framework.TestbedSetting;
-import org.jbox2d.testbed.framework.TestbedSettings;
-import org.jbox2d.testbed.framework.TestbedTest;
-import org.jbox2d.testbed.framework.TestbedSetting.SettingType;
 import org.jbox2d.testbed.framework.j2d.TestPanelJ2D;
 
-import es.osgiliath.evolutionary.basicimplementations.combinators.BasicOrderRecombinator;
-import es.osgiliath.evolutionary.basicimplementations.mutators.BasicOrderMutator;
-import es.osgiliath.evolutionary.basicimplementations.populations.ListPopulation;
-import es.osgiliath.evolutionary.basicimplementations.selectors.DeterministicTournamentSelection;
 import es.ugr.osgiliath.OsgiliathService;
+import es.ugr.osgiliath.algorithms.AlgorithmParameters;
 import es.ugr.osgiliath.evolutionary.basiccomponents.genomes.ListGenome;
 import es.ugr.osgiliath.evolutionary.basiccomponents.individuals.BasicIndividual;
-import es.ugr.osgiliath.evolutionary.basiccomponents.operators.TPXListCrossover;
-import es.ugr.osgiliath.evolutionary.basicimplementations.stopcriterions.NGenerationsStopCriterion;
-
-import es.ugr.osgiliath.algorithms.AlgorithmParameters;
-import es.ugr.osgiliath.evolutionary.EvolutionaryAlgorithm;
-import es.ugr.osgiliath.evolutionary.elements.FitnessCalculator;
-import es.ugr.osgiliath.evolutionary.elements.Mutator;
-import es.ugr.osgiliath.evolutionary.elements.ParentSelector;
-import es.ugr.osgiliath.evolutionary.elements.Population;
-import es.ugr.osgiliath.evolutionary.elements.Recombinator;
-import es.ugr.osgiliath.evolutionary.elements.Replacer;
-import es.ugr.osgiliath.evolutionary.elements.StopCriterion;
 import es.ugr.osgiliath.evolutionary.individual.Gene;
 import es.ugr.osgiliath.evolutionary.individual.Individual;
-import es.ugr.osgiliath.evolutionary.individual.Initializer;
-
-import es.ugr.osgiliath.problem.Problem;
-import es.ugr.osgiliath.problem.ProblemParameters;
-
-import es.ugr.osgiliath.util.impl.BasicLogger;
 import es.ugr.osgiliath.util.impl.HashMapParameters;
-import es.ugr.osgiliath.utils.Stopwatch;
 
 public class EABipedViewer extends OsgiliathService {
 
@@ -81,20 +55,17 @@ public class EABipedViewer extends OsgiliathService {
 		model.addCategory("My Super Tests"); // add a category
 		
 		
-		BipedSimulator simulator = new BipedSimulator();
-		simulator.reset(((ListGenome)individual.getGenome()).getGeneList());
+		BipedSimulator simulator = new BipedSimulator(individual);
+		
+		//simulator.reset(((ListGenome)individual.getGenome()).getGeneList());
 		
 		model.addTest(simulator);
-		// add our custom setting "My Range Setting", with a default value of
-		// 10, between 0 and 20
+		
 
-		TestbedPanel panel = new TestPanelJ2D(model); // create our testbed
-														// panel
+		TestbedPanel panel = new TestPanelJ2D(model);
+		JFrame testbed = new TestbedFrame(model, panel); 
 
-		JFrame testbed = new TestbedFrame(model, panel); // put both into our
-															// testbed frame
-
-		// etc
+		
 		testbed.setVisible(true);
 		testbed.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -105,8 +76,7 @@ public class EABipedViewer extends OsgiliathService {
 		Properties defaultProps = new Properties();
 		FileInputStream in;
 		try {
-			in = new FileInputStream(
-					"/home/javier/workspace/EABipeds/bipedparameters.properties");
+			in = new FileInputStream("bipedparameters.properties");
 			defaultProps.load(in);
 			in.close();
 		} catch (Exception e) {

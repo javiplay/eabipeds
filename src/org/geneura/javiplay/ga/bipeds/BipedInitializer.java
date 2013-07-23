@@ -5,17 +5,12 @@ import java.util.ArrayList;
 import org.geneura.javiplay.ga.bipeds.BipedMotorActions.MotorActions;
 
 import es.ugr.osgiliath.OsgiliathService;
-import es.ugr.osgiliath.algorithms.AlgorithmParameters;
 import es.ugr.osgiliath.evolutionary.basiccomponents.genomes.ListGenome;
 import es.ugr.osgiliath.evolutionary.basiccomponents.individuals.BasicIndividual;
 import es.ugr.osgiliath.evolutionary.elements.FitnessCalculator;
-import es.ugr.osgiliath.evolutionary.individual.Fitness;
 import es.ugr.osgiliath.evolutionary.individual.Gene;
-import es.ugr.osgiliath.evolutionary.individual.Genome;
 import es.ugr.osgiliath.evolutionary.individual.Individual;
 import es.ugr.osgiliath.evolutionary.individual.Initializer;
-import es.ugr.osgiliath.problem.Problem;
-import es.ugr.osgiliath.utils.Random;
 
 public class BipedInitializer extends OsgiliathService implements Initializer {
 
