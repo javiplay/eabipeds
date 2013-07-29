@@ -24,7 +24,7 @@ public class BipedInitConfig {
 		BodyDef bdGround = new BodyDef();
 		Body ground = w.createBody(bdGround);
 		PolygonShape shape = new PolygonShape();
-		shape.setAsEdge(new Vec2(-40.0f, -0.2f), new Vec2(40.0f, 0.3f));
+		shape.setAsEdge(new Vec2(-40.0f, 0.2f), new Vec2(40.0f, 0.2f));
 		ground.createFixture(shape, 0.0f);
 
 		// Leg A

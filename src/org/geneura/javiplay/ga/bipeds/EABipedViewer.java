@@ -25,6 +25,7 @@
 package org.geneura.javiplay.ga.bipeds;
 
 import java.io.FileInputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -47,15 +48,21 @@ import es.ugr.osgiliath.util.impl.HashMapParameters;
 public class EABipedViewer extends OsgiliathService {
 
 	private Individual individual;
+	private ArrayList<Individual> individuals;
 
-	public void start() {
+	public void start(boolean init) {
 
 		// PHYSICS SIMULATION
 		TestbedModel model = new TestbedModel();
 		model.addCategory("My Super Tests"); // add a category
 		
 		
-		BipedSimulator simulator = new BipedSimulator(individual);
+		//BipedSimulator simulator = new BipedSimulator(individual);
+	
+		
+		
+		BipedSimulator simulator = new BipedSimulator(individuals);
+		simulator.reinit = init;
 		
 		//simulator.reset(((ListGenome)individual.getGenome()).getGeneList());
 		
@@ -137,13 +144,41 @@ public class EABipedViewer extends OsgiliathService {
 	public static void main(String[] args) {
 
 		EABipedViewer ea = new EABipedViewer();
-		ea.start();
+		
+		AlgorithmParameters params = new HashMapParameters();
+		
+		Properties defaultProps = new Properties();
+		FileInputStream in;
+		try {
+			in = new FileInputStream(						
+					"bipedparameters.properties");
+			defaultProps.load(in);
+			in.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+					
+		params.setup(defaultProps);
+		ea.setAlgorithmParameters(params);
+		
+		ArrayList<Individual> individuals = new ArrayList<Individual>();
+		Individual ind = ea.loadIndividual();
+		individuals.add(ind);
+		individuals.add(ind);
+		
+		ea.setIndividualList(individuals);
+		ea.start(false);
 
 	}
 
 	public void setIndividual(Individual ind) {
 		this.individual = ind;
 
+	}
+	
+	public void setIndividualList(ArrayList<Individual> inds) {
+		this.individuals = inds;
 	}
 
 }

@@ -25,6 +25,7 @@
 package org.geneura.javiplay.ga.bipeds;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import es.osgiliath.evolutionary.basicimplementations.combinators.BasicOrderRecombinator;
@@ -82,6 +83,7 @@ public class EABipedsAlgorithmLauncher {
 			}
 						
 			params.setup(defaultProps);
+			
 			
 			Problem problem = new BipedProblem();
 			ProblemParameters problemParams = new HashMapParameters();
@@ -161,18 +163,39 @@ public class EABipedsAlgorithmLauncher {
 			algo.start();
 			
 			System.out.println("["+algo.getObtainedSolution()+"]");
-			Individual solution = (Individual) algo.getObtainedSolution();
+			Individual solution1 = (Individual) algo.getObtainedSolution();
 			sw.stop();
 			time=time+":"+sw.toString();
 			System.out.println(time);
-			System.out.println("SOL: " + solution.getFitness());
+			System.out.println("SOL: " + solution1.getFitness());
+			System.out.println(simulator.fitnessConf.getStepCount());
+
 			
-			System.out.println("SOL AGAIN: " + fitnessCalculator.calculateFitness(solution));
+			System.out.println("SOL AGAIN: " + fitnessCalculator.calculateFitness(solution1));
+			
+			simulator.save();
+			
+			simulator.initLoaded = true;
+
+			
+			stopCriterion.reset();
+			algo.start();
+			Individual solution2 = (Individual) algo.getObtainedSolution();
+			
+			System.out.println("["+algo.getObtainedSolution()+"]");
+			System.out.println(simulator.fitnessConf.getStepCount());
+			
+			
 			
 			EABipedViewer viewer = new EABipedViewer();
-			viewer.setIndividual(solution);
+			ArrayList<Individual> indlist = new  ArrayList<Individual>();
+			indlist.add(solution1);
+			indlist.add(solution2);
 			
-			viewer.start();
+			
+			viewer.setIndividualList(indlist);
+			
+			viewer.start(false);
 			
 		}
 		

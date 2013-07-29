@@ -23,7 +23,7 @@ public class BipedFitnessConfig {
 	public boolean showFitness;
 
 	private ArrayList<RevoluteJoint> motors;
-	Vec2 target_pos = new Vec2(2.2f, 1.2f);
+	Vec2 target_pos = new Vec2(1.0f, 1.0f);
 	BipedLogger log;
 
 	public BipedFitnessConfig(Individual ind) {
@@ -31,8 +31,7 @@ public class BipedFitnessConfig {
 		log = new BipedLogger(this);
 	}
 	
-
-		
+	
 
 	public String getCurrentAction() {
 			
@@ -53,11 +52,18 @@ public class BipedFitnessConfig {
 		Vec2 motor_pos = new Vec2();
 		getMotors().get(0).getAnchorA(motor_pos);
 
-		float distance = (float) Math.sqrt(Math.pow(
+		
+		/*float distance = (float) Math.sqrt(Math.pow(
 				(motor_pos.x - target_pos.x), 2)
 				+ Math.pow((motor_pos.y - target_pos.y), 2));
+			*/
+		float normalized_distance = (target_pos.x - motor_pos.x)/target_pos.x;
+		if (normalized_distance < 0) normalized_distance = 0;
+		float score = normalized_distance*0.5f; 
 		
-		setFitness(distance);
+				
+		
+		setFitness(score);
 
 		ArrayList<Gene> genes = ((ListGenome) individual.getGenome())
 				.getGeneList();
@@ -79,15 +85,22 @@ public class BipedFitnessConfig {
 				current_gene++;
 				if (current_gene == genes.size()) {
 					// fitness = distance;
-					if (showFitness) 
-						System.out.println("Fitness live:" + getFitness());
+					
 					if (logging) {
 						log.finish();
 					}
+					float angleA = (float) Math.abs(getAngleA()/(2*Math.PI));
+					float angleB = (float) Math.abs(getAngleB()/(2*Math.PI));
+					
+					
+					score += 0.5f*(angleA + angleB);
+					setFitness(score);
+					if (showFitness) 
+						System.out.println("Fitness live:" + getFitness());
 					return true;
 					
 
-					//reset();
+					
 				}
 
 			}
@@ -166,9 +179,16 @@ public class BipedFitnessConfig {
 	public void setMotors(ArrayList<RevoluteJoint> motors) {
 		this.motors = motors;
 	}
-
-
-
+	
+	public float getAngleA() {
+		return getMotors().get(0).getBodyA().getAngle();
+		
+	}
+	
+	public float getAngleB() {
+		return getMotors().get(0).getBodyB().getAngle();
+	}
+	
 
 	public double getFitness() {
 		return fitness;
@@ -179,6 +199,13 @@ public class BipedFitnessConfig {
 
 	public void setFitness(double fitness) {
 		this.fitness = fitness;
+	}
+
+
+
+	public void setIndividual(Individual ind) {
+		this.individual = ind;
+		
 	}
 
 }
