@@ -1,5 +1,6 @@
 package org.geneura.javiplay.ga.bipeds;
 
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -14,106 +15,76 @@ import es.ugr.osgiliath.evolutionary.individual.Individual;
 
 public class BipedFitnessConfig {
 
-	private Individual individual;
-	private int current_gene;
-	private int acc_duration;
+	private ArrayList<Gene> genes;
+	private BipedPositionFitness fit;
+	private int currentGene;
+	private int accDuration;
 	private int individualCount;
 	private int stepCount;
 	private double fitness;
 	public boolean showFitness;
-
+	public float velocityVariance = 0;
 	private ArrayList<RevoluteJoint> motors;
-	Vec2 target_pos = new Vec2(1.0f, 1.0f);
-	BipedLogger log;
+	private int next_action_step;
 
 	public BipedFitnessConfig(Individual ind) {
-		this.individual = ind;
-		log = new BipedLogger(this);
-	}
-	
-	
+		genes = ((ListGenome) ind.getGenome()).getGeneList();
 
-	public String getCurrentAction() {
-			
-		return ((BipedGene) ((ListGenome) individual.getGenome()).getGeneList()
-				.get(current_gene)).actions.get(0).toString();
-	
+		fit = new BipedPositionFitness();
 	}
 
+	public String getCurrentAction() {		
+		return ((BipedGene) genes.get(currentGene-1)).actions.get(0).toString();
+	}
+
+	
 	public int getCurrentDuration() {
-
-		return ((BipedGene) ((ListGenome) individual.getGenome()).getGeneList()
-				.get(current_gene)).duration;
+		return ((BipedGene) genes.get(currentGene-1)).duration;
 	}
 
-	public boolean step(boolean logging, TestbedSettings settings) {
+	public boolean step(TestbedSettings settings) {
 		stepCount++;
 
 		Vec2 motor_pos = new Vec2();
 		getMotors().get(0).getAnchorA(motor_pos);
 
+		fit.addPosition(motor_pos);
 		
-		/*float distance = (float) Math.sqrt(Math.pow(
-				(motor_pos.x - target_pos.x), 2)
-				+ Math.pow((motor_pos.y - target_pos.y), 2));
-			*/
-		float normalized_distance = (target_pos.x - motor_pos.x)/target_pos.x;
-		if (normalized_distance < 0) normalized_distance = 0;
-		float score = normalized_distance*0.5f; 
-		
+		// check next gene with accumulated duration (in steps) of the actions					
+		if (stepCount >= next_action_step) {
+			
+			accDuration += ((BipedGene) genes.get(currentGene)).duration;
+			
+			next_action_step = accDuration
+					/ (1000 / settings.getSetting(TestbedSettings.Hz).value);
+			
+			// execute the action
+			processGene((BipedGene) genes.get(currentGene));
+
+			// accumulate the action duration							
+			currentGene++;
+			if (currentGene == genes.size()) {
+
+				float score = fit.toPoint();
+				setFitness(score);
+				if (showFitness)
+					System.out.println("Fitness live:" + getFitness());
+				return true;					
 				
-		
-		setFitness(score);
-
-		ArrayList<Gene> genes = ((ListGenome) individual.getGenome())
-				.getGeneList();
-
-		if (current_gene < genes.size()) {
-
-			if (logging) {
-				log.writeBodyAngles();
-				log.writeJointPosition();
-				log.writeActionAngles();
-			}
-
-			// check next gene with accumulated duration (in steps) of the
-			// actions
-			if (stepCount > acc_duration
-					/ (1000 / settings.getSetting(TestbedSettings.Hz).value)) {
-				processGene((BipedGene) genes.get(current_gene));
-				acc_duration += ((BipedGene) genes.get(current_gene)).duration;
-				current_gene++;
-				if (current_gene == genes.size()) {
-					// fitness = distance;
-					
-					if (logging) {
-						log.finish();
-					}
-					float angleA = (float) Math.abs(getAngleA()/(2*Math.PI));
-					float angleB = (float) Math.abs(getAngleB()/(2*Math.PI));
-					
-					
-					score += 0.5f*(angleA + angleB);
-					setFitness(score);
-					if (showFitness) 
-						System.out.println("Fitness live:" + getFitness());
-					return true;
-					
-
-					
-				}
-
-			}
+			}			
+			
 		}
 		return false;
 	}
+	
 
 	void reset() {
-		current_gene = 0;
+		currentGene = 0;
 		stepCount = 0;
-		setFitness(Float.MAX_VALUE);
-		acc_duration = 0;
+		accDuration = 0;
 		individualCount = 0;
+		next_action_step = 0;
+		fit.reset();
 
 	}
 
@@ -135,7 +106,7 @@ public class BipedFitnessConfig {
 
 	public int getCurrentGeneCount() {
 
-		return current_gene;
+		return currentGene;
 	}
 
 	public int getIndividualCount() {
@@ -170,42 +141,29 @@ public class BipedFitnessConfig {
 		}
 	}
 
-	public BipedGene getGene(int geneCount) {
-
-		return (BipedGene) ((ListGenome) individual.getGenome()).getGeneList()
-				.get(geneCount);
-	}
-
 	public void setMotors(ArrayList<RevoluteJoint> motors) {
 		this.motors = motors;
 	}
-	
+
 	public float getAngleA() {
 		return getMotors().get(0).getBodyA().getAngle();
-		
+
 	}
-	
+
 	public float getAngleB() {
 		return getMotors().get(0).getBodyB().getAngle();
 	}
-	
 
 	public double getFitness() {
 		return fitness;
 	}
 
-
-
-
 	public void setFitness(double fitness) {
 		this.fitness = fitness;
 	}
 
-
-
 	public void setIndividual(Individual ind) {
-		this.individual = ind;
-		
+		genes = ((ListGenome) ind.getGenome()).getGeneList();
 	}
 
 }

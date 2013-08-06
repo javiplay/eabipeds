@@ -97,7 +97,7 @@ public class FastBipedSimulator {
 				settings.getSetting(TestbedSettings.VelocityIterations).value,
 				settings.getSetting(TestbedSettings.PositionIterations).value);
 
-		return fitnessConf.step(false, settings);
+		return fitnessConf.step(settings);
 
 	}
 

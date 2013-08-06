@@ -62,7 +62,7 @@ public class EABipedViewer extends OsgiliathService {
 		
 		
 		BipedSimulator simulator = new BipedSimulator(individuals);
-		simulator.reinit = init;
+		
 		
 		//simulator.reset(((ListGenome)individual.getGenome()).getGeneList());
 		

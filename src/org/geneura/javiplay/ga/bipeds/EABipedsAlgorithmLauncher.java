@@ -168,10 +168,11 @@ public class EABipedsAlgorithmLauncher {
 			time=time+":"+sw.toString();
 			System.out.println(time);
 			System.out.println("SOL: " + solution1.getFitness());
-			System.out.println(simulator.fitnessConf.getStepCount());
+			
 
 			
 			System.out.println("SOL AGAIN: " + fitnessCalculator.calculateFitness(solution1));
+			System.out.println(simulator.fitnessConf.getStepCount());
 			
 			simulator.save();
 			
@@ -183,9 +184,9 @@ public class EABipedsAlgorithmLauncher {
 			Individual solution2 = (Individual) algo.getObtainedSolution();
 			
 			System.out.println("["+algo.getObtainedSolution()+"]");
+			
+			System.out.println("SOL AGAIN: " + fitnessCalculator.calculateFitness(solution2));
 			System.out.println(simulator.fitnessConf.getStepCount());
-			
-			
 			
 			EABipedViewer viewer = new EABipedViewer();
 			ArrayList<Individual> indlist = new  ArrayList<Individual>();

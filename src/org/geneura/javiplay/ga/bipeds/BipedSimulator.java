@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import org.geneura.javiplay.ga.bipeds.BipedMotorActions.MotorActions;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
 import org.jbox2d.testbed.framework.TestbedController;
 import org.jbox2d.testbed.framework.TestbedSettings;
@@ -19,10 +20,10 @@ import es.ugr.osgiliath.evolutionary.individual.Individual;
 public class BipedSimulator extends TestbedTest {
 
 	private BipedFitnessConfig fitnessConf;
-	boolean reinit = true;
 	private ArrayList<Individual> individuals;
 	private int current_ind = 0;
 	private boolean firstRun = true;
+	
 
 	public BipedSimulator(Individual ind) {
 		super();
@@ -42,15 +43,18 @@ public class BipedSimulator extends TestbedTest {
 
 	@Override
 	public String getTestName() {
-		return "Two Legged Robot";
+		return "worldstate";
 	}
 
 	@Override
 	public void step(TestbedSettings settings) {
 
 		// WORLD STEP
-		super.step(settings);
+		super.step(settings);			
+
+		boolean finished = fitnessConf.step(settings);
 		
+
 		addTextLine("Joint action: " + fitnessConf.getCurrentAction()
 				+ ", duration: " + fitnessConf.getCurrentDuration() + "ms");
 		addTextLine("Joint position X: " + fitnessConf.getJointPosition().x);
@@ -59,12 +63,10 @@ public class BipedSimulator extends TestbedTest {
 		addTextLine("Gene: " + fitnessConf.getCurrentGeneCount());
 		addTextLine("Individual: " + current_ind);
 
-		boolean finished = fitnessConf.step(true, settings);
 		if (finished) {
-			reset();			
+			reset();				
 		}
 
-		
 
 	}
 
@@ -72,32 +74,38 @@ public class BipedSimulator extends TestbedTest {
 	public void initTest(boolean arg0) {
 
 		setTitle(getTestName());
-
-		if (firstRun) {
-			BipedInitConfig initConfig = new BipedInitConfig(getWorld());
-			fitnessConf.setMotors(initConfig.getMotors());
-			firstRun = false;
-		}
 		
-		if (reinit) {
-			BipedInitConfig initConfig = new BipedInitConfig(getWorld());
-			fitnessConf.setMotors(initConfig.getMotors());
+
+		if (firstRun ) {
+		BipedInitConfig initConfig = new BipedInitConfig(getWorld());
+		fitnessConf.setMotors(initConfig.getMotors());
+		firstRun = false;
+		} else {
+		load();
+		ArrayList<RevoluteJoint> motors = new ArrayList<RevoluteJoint>();
+		for (Joint j = m_world.getJointList(); j != null; j = j.getNext()) {
+			motors.add((RevoluteJoint) j);
+		}			
+		fitnessConf.setMotors(motors);
 		}
 
 	}
 
 	@Override
 	public void reset() {
-		if (reinit) {
-			super.reset();
-		}
+		
+		
+		super.reset();
+		
+		
+		//fitnessConf.setMotors(motors);
 	
 		System.out.println(fitnessConf.getStepCount());
+		
 		fitnessConf.reset();
-		if (current_ind + 1 == individuals.size()) {
-			getModel().getSettings().pause = true;
-		}
 		current_ind = (current_ind + 1) % individuals.size();		
+		if (current_ind == 0)
+			firstRun = true;
 				
 		
 		fitnessConf.setIndividual(individuals.get(current_ind));

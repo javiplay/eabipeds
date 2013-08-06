@@ -88,7 +88,8 @@ public class BipedInitConfig {
 		RevoluteJointDef rjdLegs = new RevoluteJointDef();
 		rjdLegs.initialize(bA, bB, new Vec2(0.0f, 1.3f));
 
-		rjdLegs.motorSpeed = -1.0f * MathUtils.PI;
+		rjdLegs.motorSpeed = -2.0f * MathUtils.PI;
+		
 		rjdLegs.maxMotorTorque = 10000.0f;
 		rjdLegs.enableMotor = false;
 
