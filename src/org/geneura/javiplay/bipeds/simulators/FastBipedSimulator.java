@@ -6,8 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.geneura.javiplay.bipeds.ea.BipedFitnessController;
-import org.geneura.javiplay.bipeds.morphology.CompassLike;
+import org.geneura.javiplay.bipeds.logging.BipedLogger;
+import org.geneura.javiplay.bipeds.morphology.BipedFitnessController;
+import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.joints.Joint;
@@ -30,6 +31,24 @@ public class FastBipedSimulator {
 	boolean initLoaded;
 	private JbSerializer serializer = new PbSerializer();
 	private JbDeserializer deserializer  = new PbDeserializer();
+	BipedLogger logger = null;
+
+	
+	/**
+	 * @return the logger
+	 */
+	public BipedLogger getLogger() {
+		return logger;
+	}
+
+	/**
+	 * @param logger the logger to set
+	 */
+	public void setLogger(BipedLogger logger) {
+		this.logger = logger;
+	}
+
+	
 
 	public void save() {
 
@@ -97,23 +116,27 @@ public class FastBipedSimulator {
 			
 		} else {
 			
-			CompassLike initConfig = new CompassLike(m_world);
+			BipedMorphology initConfig = new BipedMorphology(m_world);
 			fitnessController.setMotors(initConfig.getMotors());
 		}
 
 	}
 
-	public double reset(Individual ind, int cycles) {
+	public double reset(Individual ind, int cycles, int n) {
 
 		Vec2 gravity = new Vec2(0, -10f);
 		m_world = new World(gravity, true);
 
-		fitnessController = new BipedFitnessController(ind, cycles);
-				
+		fitnessController = new BipedFitnessController(ind, cycles);		
+		fitnessController.setLogger(logger);		
+		logger.setFitnessController(fitnessController);
+		logger.open(n);
 
 		initTest(initLoaded);
 
 		while (!step());
+		
+		logger.close();
 
 		return fitnessController.getFitness();
 	}

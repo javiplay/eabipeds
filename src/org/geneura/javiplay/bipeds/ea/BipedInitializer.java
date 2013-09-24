@@ -20,8 +20,13 @@ public class BipedInitializer extends OsgiliathService implements Initializer {
 	public ArrayList<Individual> initializeIndividuals(int size) {
 		
 		ArrayList<Individual> list = new ArrayList<Individual>(size);
-		int genome_size = (Integer) getAlgorithmParameters().getParameter(BipedParameters.GENOME_SIZE);
-		int max_possible_duration = (Integer) getAlgorithmParameters().getParameter(BipedParameters.MAX_ACTION_DURATION);
+		int genomeSize = (Integer) getAlgorithmParameters().getParameter(BipedParameters.GENOME_SIZE);
+		int maxDuration = (Integer) getAlgorithmParameters().getParameter(BipedParameters.MAX_ACTION_DURATION);
+		int minDuration = (Integer) getAlgorithmParameters().getParameter(BipedParameters.MIN_ACTION_DURATION);
+		double maxSpeed = (Double) getAlgorithmParameters().getParameter(BipedParameters.MAX_SPEED);
+		double minSpeed = (Double) getAlgorithmParameters().getParameter(BipedParameters.MIN_SPEED);
+		boolean calculateFitness = (Boolean) getAlgorithmParameters().getParameter(BipedParameters.FITNESS_AT_INIT);
+		
 		int motors = (Integer) getAlgorithmParameters().getParameter(BipedParameters.MOTORS);
 		
 		for (int i=0; i < size; i++) {
@@ -29,8 +34,8 @@ public class BipedInitializer extends OsgiliathService implements Initializer {
 			BasicIndividual individual = new BasicIndividual();
 			
 			ListGenome genome = new ListGenome();
-			ArrayList<Gene> genes = new ArrayList<Gene>(genome_size);
-			for (int j=0; j < genome_size ; j++ ) {
+			ArrayList<Gene> genes = new ArrayList<Gene>(genomeSize);
+			for (int j=0; j < genomeSize ; j++ ) {
 				
 				java.util.Random rand = new java.util.Random();
 				// GENE CONFIG
@@ -41,15 +46,22 @@ public class BipedInitializer extends OsgiliathService implements Initializer {
 					actions.add(MotorActions.values()[action]);
 				}				
 				
-				int duration = rand.nextInt(max_possible_duration);
+				int duration = minDuration;
+				if ((maxDuration-minDuration)>0) {
+					duration += rand.nextInt(maxDuration-minDuration);
+				}
 				
-				BipedGene gene = new BipedGene(actions, duration);				
+				float speed = (float) (minSpeed + rand.nextFloat()*(float)(maxSpeed-minSpeed));
+				
+				BipedGene gene = new BipedGene(actions, duration, speed);				
 				genes.add(gene);
 			}
 			genome.setGenes(genes);
 			
 			individual.setGenome(genome);
-			individual.setFitness(fc.calculateFitness(individual));
+			if (calculateFitness) {
+				individual.setFitness(fc.calculateFitness(individual));
+			}
 			
 			list.add(individual);
 			

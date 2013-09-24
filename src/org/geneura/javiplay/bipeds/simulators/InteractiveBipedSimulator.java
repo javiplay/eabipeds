@@ -2,7 +2,7 @@ package org.geneura.javiplay.bipeds.simulators;
 
 import java.util.ArrayList;
 
-import org.geneura.javiplay.bipeds.morphology.CompassLike;
+import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
 import org.geneura.javiplay.bipeds.morphology.MotorSpeed;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.dynamics.joints.Joint;
@@ -28,19 +28,17 @@ public class InteractiveBipedSimulator extends TestbedTest {
 	public void initTest(boolean arg0) {
 
 		setTitle(getTestName());
-		CompassLike initConfig = new CompassLike(getWorld());
+		BipedMorphology initConfig = new BipedMorphology(getWorld());
 		motor = initConfig.getMotors().get(0);
 
 		
 
 	}
-	
-	
 
 
 	@Override
 	  public void keyPressed(char argKeyChar, int argKeyCode) {
-		float speed = MotorSpeed.MAX_SPEED;
+		float speed = 1;
 	
 	    switch (argKeyChar) {
 	      case 's':

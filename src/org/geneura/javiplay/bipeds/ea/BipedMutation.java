@@ -42,34 +42,47 @@ public class BipedMutation extends OsgiliathService implements Mutation {
 		int mutations = (Integer) this.getAlgorithmParameters().getParameter(
 				BipedParameters.GENES_TO_MUTATE);
 
-		int duration_change = (Integer) this.getAlgorithmParameters()
-				.getParameter(BipedParameters.GENE_DURATION_CHANGE);
-		int min_duration = (Integer) this.getAlgorithmParameters()
-				.getParameter(BipedParameters.MIN_ACTION_DURATION);
+		int maxDurationChange = (Integer) this.getAlgorithmParameters()
+				.getParameter(BipedParameters.MAX_DURATION_CHANGE);
+		double maxSpeedChange = (Double) this.getAlgorithmParameters().getParameter(BipedParameters.MAX_SPEED_CHANGE);
 
+		
+		int minDuration = (Integer) this.getAlgorithmParameters()
+				.getParameter(BipedParameters.MIN_ACTION_DURATION);
+		double minSpeed = (Double) this.getAlgorithmParameters().getParameter(BipedParameters.MIN_SPEED);
+		
+		
 		for (int i = 0; i < mutations; i++) {
 
 			int index = rand.nextInt(genome_size);
 			BipedGene gene = (BipedGene) gl.get(index);
 
-			// mutate with same probability either action or duration
-			if (rand.nextFloat() > 0.5) {
-				// randomize all motor actions
-				for (int j = 0; j < gene.actions.size(); j++) {
-					gene.actions.set(j, MotorActions.values()[rand
+			// mutate action, speed and duration
+			// randomize all motor actions
+			for (int j = 0; j < gene.getActions().size(); j++) {
+					gene.getActions().set(j, MotorActions.values()[rand
 							.nextInt(MotorActions.values().length)]);
-				}
-			} else {
-
-				// change the time
-				int sign = (rand.nextInt(2) * 2 - 1);
-				int change = sign * rand.nextInt(duration_change);
-
-				gene.duration += change;
-
-				if (gene.duration < min_duration)
-					gene.duration = min_duration;
 			}
+			
+			
+			int durationChange = 0;
+			// change in duration 
+			int durationChangeSign = (rand.nextInt(2) * 2 - 1);
+			if (maxDurationChange != 0) 
+				durationChange = durationChangeSign * rand.nextInt(maxDurationChange); 
+			
+			
+			gene.setDuration(gene.getDuration() + durationChange);
+			if (gene.getDuration() < minDuration)
+					gene.setDuration(minDuration);
+			
+			// change in speed
+			int speedChangeSign = (rand.nextInt(2) * 2 - 1);
+			float speedChange = speedChangeSign * rand.nextFloat()*(float)maxSpeedChange;
+			gene.setSpeed(gene.getSpeed() + speedChange);
+			if (gene.getSpeed() < minSpeed)
+					gene.setDuration(minDuration);			
+			
 		}
 
 		return genome;

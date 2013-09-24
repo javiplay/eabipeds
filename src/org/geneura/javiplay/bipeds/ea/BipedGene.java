@@ -4,7 +4,12 @@ import java.util.ArrayList;
 
 import org.geneura.javiplay.bipeds.morphology.MotorActions;
 
+import es.ugr.osgiliath.algorithms.Algorithm;
+import es.ugr.osgiliath.algorithms.AlgorithmParameters;
+import es.ugr.osgiliath.evolutionary.basiccomponents.genomes.ListGenome;
+import es.ugr.osgiliath.evolutionary.basiccomponents.individuals.BasicIndividual;
 import es.ugr.osgiliath.evolutionary.individual.Gene;
+import es.ugr.osgiliath.evolutionary.individual.Individual;
 
 public class BipedGene implements Gene, Cloneable {
 
@@ -15,24 +20,26 @@ public class BipedGene implements Gene, Cloneable {
 	
 	
 	
-	ArrayList<MotorActions> actions;
-	int duration;
+	private ArrayList<MotorActions> actions;
+	private float speed;
+	private int duration;
 
-	public BipedGene(ArrayList<MotorActions> actions, int duration) {
-		this.actions = actions;
-		this.duration = duration;
+	public BipedGene(ArrayList<MotorActions> actions, int duration, float speed) {
+		this.setActions(actions);
+		this.setDuration(duration);
+		this.setSpeed(speed);
 	}
 
 	public Object clone() {
 		
-		ArrayList<MotorActions> actions_clone = new ArrayList<MotorActions>(actions.size());
+		ArrayList<MotorActions> clonedActions = new ArrayList<MotorActions>(getActions().size());
 		
-		for (int k=0; k < actions.size(); k++) {
-			MotorActions action_clone = actions.get(k);
-			actions_clone.add(action_clone);
+		for (int k=0; k < getActions().size(); k++) {
+			MotorActions clonedAction = getActions().get(k);
+			clonedActions.add(clonedAction);
 		}				
 		
-		return new BipedGene(actions_clone, duration);
+		return new BipedGene(clonedActions, getDuration(), getSpeed());
 	}
 
 	/* (non-Javadoc)
@@ -40,7 +47,54 @@ public class BipedGene implements Gene, Cloneable {
 	 */
 	@Override
 	public String toString() {
-		return "BipedGene [actions=" + actions + ", duration=" + duration + "]";
+		return "BipedGene [actions=" + getActions() + ", duration=" + getDuration() + "speed=" + getSpeed() + "]" ;
+	}
+	
+	
+	
+	
+	
+
+	/**
+	 * @return the speed
+	 */
+	public float getSpeed() {
+		return speed;
+	}
+
+	/**
+	 * @param speed the speed to set
+	 */
+	public void setSpeed(float speed) {
+		this.speed = speed;
+	}
+
+	/**
+	 * @return the actions
+	 */
+	public ArrayList<MotorActions> getActions() {
+		return actions;
+	}
+
+	/**
+	 * @param actions the actions to set
+	 */
+	public void setActions(ArrayList<MotorActions> actions) {
+		this.actions = actions;
+	}
+
+	/**
+	 * @return the duration
+	 */
+	public int getDuration() {
+		return duration;
+	}
+
+	/**
+	 * @param duration the duration to set
+	 */
+	public void setDuration(int duration) {
+		this.duration = duration;
 	}
 	
 		
