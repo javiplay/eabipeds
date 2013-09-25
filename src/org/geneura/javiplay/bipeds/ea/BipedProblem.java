@@ -1,10 +1,14 @@
 package org.geneura.javiplay.bipeds.ea;
 
+
+import org.geneura.javiplay.bipeds.simulators.FastBipedSimulator;
+
 import es.ugr.osgiliath.problem.InputData;
 import es.ugr.osgiliath.problem.Problem;
 import es.ugr.osgiliath.problem.ProblemParameters;
 
 public class BipedProblem implements Problem{
+	
 
 	@Override
 	public void setInputData(InputData data) {
@@ -34,6 +38,11 @@ public class BipedProblem implements Problem{
 	public InputData getInputData() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public FastBipedSimulator getSimulator() {
+		return null;
+	
 	}
 
 }

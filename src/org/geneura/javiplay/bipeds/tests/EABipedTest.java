@@ -30,12 +30,12 @@ import java.util.Properties;
 
 import javax.swing.JFrame;
 
-import org.geneura.javiplay.bipeds.ea.BipedInitializer;
-import org.geneura.javiplay.bipeds.ea.BipedMutation;
-import org.geneura.javiplay.bipeds.ea.BipedParameters;
 import org.geneura.javiplay.bipeds.ea.BipedProblem;
-import org.geneura.javiplay.bipeds.ea.BipedFitnessCalculator;
-import org.geneura.javiplay.bipeds.simulators.TestbedBipedSimulator;
+import org.geneura.javiplay.bipeds.ea.behavior.BehaviorFitnessCalculator;
+import org.geneura.javiplay.bipeds.ea.behavior.BehaviorInitializer;
+import org.geneura.javiplay.bipeds.ea.behavior.BehaviorMutation;
+import org.geneura.javiplay.bipeds.ea.behavior.BehaviorParameters;
+import org.geneura.javiplay.bipeds.simulators.TestbedBehaviorSimulator;
 import org.geneura.javiplay.bipeds.simulators.FastBipedSimulator;
 import org.jbox2d.testbed.framework.TestbedFrame;
 import org.jbox2d.testbed.framework.TestbedModel;
@@ -79,6 +79,7 @@ public class EABipedTest {
 			Stopwatch sw = new Stopwatch();
 			sw.start();
 			
+			
 			//Algorithm and parameters
 			EvolutionaryAlgorithm algo = new EvolutionaryAlgorithm();
 			
@@ -98,26 +99,27 @@ public class EABipedTest {
 						
 			params.setup(defaultProps);
 			
-			
 			Problem problem = new BipedProblem();
 			ProblemParameters problemParams = new HashMapParameters();
+			
 			problem.setProblemParameters(problemParams);
 			
 			
 			
 			
+			
 			//FITNESS CALCULATOR
-			FitnessCalculator fitnessCalculator = new BipedFitnessCalculator(simulator, params);
+			FitnessCalculator fitnessCalculator = new BehaviorFitnessCalculator();
 			
 
 			
 			//Population and Initializer
 			Population pop = new ListPopulation();	
 			
-			Initializer init = new BipedInitializer();
-			((BipedInitializer) init).setAlgorithmParameters(params);
-			((BipedInitializer) init).setProblem(problem);
-			((BipedInitializer) init).setFitnessCalculator(fitnessCalculator);
+			Initializer init = new BehaviorInitializer();
+			((BehaviorInitializer) init).setAlgorithmParameters(params);
+			((BehaviorInitializer) init).setProblem(problem);
+			((BehaviorInitializer) init).setFitnessCalculator(fitnessCalculator);
 			
 			((ListPopulation) pop).setInitializer(init);
 			((ListPopulation) pop).setAlgorithmParameters(params);
@@ -146,7 +148,7 @@ public class EABipedTest {
 			
 			
 			//MUTATION
-			BipedMutation mutation = new BipedMutation();
+			BehaviorMutation mutation = new BehaviorMutation();
 			mutation.setAlgorithmParameters(params);
 			
 			//MUTATOR
@@ -218,9 +220,9 @@ public class EABipedTest {
 			model.addCategory("My Super Tests"); // add a category
 					
 			
-			TestbedBipedSimulator simulator2 = new TestbedBipedSimulator(
+			TestbedBehaviorSimulator simulator2 = new TestbedBehaviorSimulator(
 					indlist, 
-					(Integer) params.getParameter(BipedParameters.GENOME_CYCLES));			
+					(Integer) params.getParameter(BehaviorParameters.GENOME_CYCLES));			
 			
 			model.addTest(simulator2);
 			
@@ -231,6 +233,7 @@ public class EABipedTest {
 			testbed.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			
 		}
+		
 		
 		public static void main(String[] args) {
 			

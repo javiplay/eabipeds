@@ -6,17 +6,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
-import org.geneura.javiplay.bipeds.morphology.BipedFitnessController;
+import org.geneura.javiplay.bipeds.morphology.BehaviorFitnessController;
 import org.jbox2d.common.Vec2;
 
 public class BipedLogger {
 
-	BipedFitnessController fitnessController;
+	BehaviorFitnessController fitnessController;
 
 	/**
 	 * @return the fitnessController
 	 */
-	public BipedFitnessController getFitnessController() {
+	public BehaviorFitnessController getFitnessController() {
 		return fitnessController;
 	}
 
@@ -24,7 +24,7 @@ public class BipedLogger {
 	 * @param fitnessController
 	 *            the fitnessController to set
 	 */
-	public void setFitnessController(BipedFitnessController fitnessController) {
+	public void setFitnessController(BehaviorFitnessController fitnessController) {
 		this.fitnessController = fitnessController;
 	}
 
@@ -33,7 +33,7 @@ public class BipedLogger {
 	BufferedWriter file;
 
 	int number;
-	public BipedLogger(BipedFitnessController fitnessController) {
+	public BipedLogger(BehaviorFitnessController fitnessController) {
 		this.fitnessController = fitnessController;
 	}
 

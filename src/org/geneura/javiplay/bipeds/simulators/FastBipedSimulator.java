@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.geneura.javiplay.bipeds.logging.BipedLogger;
-import org.geneura.javiplay.bipeds.morphology.BipedFitnessController;
+import org.geneura.javiplay.bipeds.morphology.BehaviorFitnessController;
 import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
@@ -27,7 +27,7 @@ public class FastBipedSimulator {
 
 	protected World m_world;
 	TestbedSettings settings = new TestbedSettings();
-	public BipedFitnessController fitnessController;
+	public BehaviorFitnessController fitnessController;
 	boolean initLoaded;
 	private JbSerializer serializer = new PbSerializer();
 	private JbDeserializer deserializer  = new PbDeserializer();
@@ -122,12 +122,12 @@ public class FastBipedSimulator {
 
 	}
 
-	public double reset(Individual ind, int cycles, int n) {
+	public double getBehaviorFitness(Individual ind, int cycles, int n) {
 
 		Vec2 gravity = new Vec2(0, -10f);
 		m_world = new World(gravity, true);
 
-		fitnessController = new BipedFitnessController(ind, cycles);		
+		fitnessController = new BehaviorFitnessController(ind, cycles);		
 		fitnessController.setLogger(logger);		
 		logger.setFitnessController(fitnessController);
 		logger.open(n);
@@ -140,5 +140,6 @@ public class FastBipedSimulator {
 
 		return fitnessController.getFitness();
 	}
+
 
 }

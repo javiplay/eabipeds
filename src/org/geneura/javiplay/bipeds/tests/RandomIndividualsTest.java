@@ -6,10 +6,10 @@ import java.util.Properties;
 
 import javax.swing.JFrame;
 
-import org.geneura.javiplay.bipeds.ea.BipedGene;
-import org.geneura.javiplay.bipeds.ea.BipedInitializer;
-import org.geneura.javiplay.bipeds.ea.BipedParameters;
-import org.geneura.javiplay.bipeds.simulators.TestbedBipedSimulator;
+import org.geneura.javiplay.bipeds.ea.behavior.BehaviorGene;
+import org.geneura.javiplay.bipeds.ea.behavior.BehaviorInitializer;
+import org.geneura.javiplay.bipeds.ea.behavior.BehaviorParameters;
+import org.geneura.javiplay.bipeds.simulators.TestbedBehaviorSimulator;
 import org.jbox2d.testbed.framework.TestbedFrame;
 import org.jbox2d.testbed.framework.TestbedModel;
 import org.jbox2d.testbed.framework.TestbedPanel;
@@ -44,7 +44,7 @@ public class RandomIndividualsTest {
 		AlgorithmParameters params = LoadParameters("random_behaviour.properties");
 
 		ArrayList<Individual> individuals = new ArrayList<Individual>();
-		BipedInitializer bi = new BipedInitializer();
+		BehaviorInitializer bi = new BehaviorInitializer();
 		bi.setAlgorithmParameters(params);
 
 		
@@ -56,9 +56,9 @@ public class RandomIndividualsTest {
 		TestbedModel model = new TestbedModel();
 		model.addCategory("Random"); // add a category
 
-		TestbedBipedSimulator simulator2 = new TestbedBipedSimulator(
+		TestbedBehaviorSimulator simulator2 = new TestbedBehaviorSimulator(
 				individuals,
-				(Integer) params.getParameter(BipedParameters.GENOME_CYCLES));
+				(Integer) params.getParameter(BehaviorParameters.GENOME_CYCLES));
 
 		model.addTest(simulator2);
 
