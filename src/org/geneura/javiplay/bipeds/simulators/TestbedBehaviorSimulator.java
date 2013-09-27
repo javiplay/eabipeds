@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.geneura.javiplay.bipeds.logging.BipedLogger;
 import org.geneura.javiplay.bipeds.morphology.BehaviorFitnessController;
+import org.geneura.javiplay.bipeds.morphology.BipedDataAudit;
 import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
 import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
@@ -12,7 +13,7 @@ import org.jbox2d.testbed.framework.TestbedTest;
 
 import es.ugr.osgiliath.evolutionary.individual.Individual;
 
-public class TestbedBehaviorSimulator extends TestbedTest {
+public class TestbedBehaviorSimulator extends TestbedTest implements Simulator{
 
 	private BehaviorFitnessController fitnessController;
 	private ArrayList<Individual> individuals;
@@ -26,7 +27,7 @@ public class TestbedBehaviorSimulator extends TestbedTest {
 
 	public TestbedBehaviorSimulator(ArrayList<Individual> inds, int cycles) {
 		super();
-		setFitnessController(new BehaviorFitnessController(inds.get(0), cycles));
+		setFitnessController(new BehaviorFitnessController(inds.get(0)));
 		getFitnessController().showFitness = true;
 		individuals = inds;
 	}
@@ -119,6 +120,57 @@ public class TestbedBehaviorSimulator extends TestbedTest {
 	 */
 	public void setFitnessController(BehaviorFitnessController fitnessController) {
 		this.fitnessController = fitnessController;
+	}
+
+
+	
+	@Override
+	public ArrayList<RevoluteJoint> getJoints() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BipedDataAudit getBipedDataAudit() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setFitnessStepCalculator(
+			FitnessStepCalculator fitnessStepCalculator) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public FitnessStepCalculator getFitnessStepCalculator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean fitnessStep(Individual ind) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean fitnessStep() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void simulatorStep() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public TestbedSettings getSettings() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

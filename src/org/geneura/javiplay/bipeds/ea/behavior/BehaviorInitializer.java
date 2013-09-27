@@ -33,6 +33,8 @@ public class BehaviorInitializer extends OsgiliathService implements Initializer
 			 
 			BasicIndividual individual = new BasicIndividual();
 			
+			
+			
 			ListGenome genome = new ListGenome();
 			ArrayList<Gene> genes = new ArrayList<Gene>(genomeSize);
 			for (int j=0; j < genomeSize ; j++ ) {

@@ -32,17 +32,17 @@ public class BipedLogger {
 
 	BufferedWriter file;
 
-	int number;
+	
 	public BipedLogger(BehaviorFitnessController fitnessController) {
 		this.fitnessController = fitnessController;
 	}
 
-	public void open(int n) {
-		this.number = n;
+	public void open() {
+		
 
 		try {
 			body_angles_file = new BufferedWriter(new FileWriter(new File(
-					"./octave/body_angles_" + n), false));
+					"./octave/body_angles"), false));
 			
 		} catch (IOException e) {
 
@@ -94,11 +94,5 @@ public class BipedLogger {
 
 	}
 
-	public void clear() {
-		
-		close();
-		open(number);		
-		
-	}
-
+	
 }

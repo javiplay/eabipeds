@@ -17,7 +17,7 @@ import es.ugr.osgiliath.evolutionary.individual.Individual;
 public class LinearFitnessController {
 
 	private ArrayList<Gene> genes;
-	private BipedPositionFitness positionFitness;
+	private BipedDataAudit positionFitness;
 	private BipedLogger logger;
 
 	/**
@@ -54,7 +54,7 @@ public class LinearFitnessController {
 	
 		
 		genes = ((ListGenome) ind.getGenome()).getGeneList();
-		positionFitness = new BipedPositionFitness(cycles);
+		positionFitness = new BipedDataAudit();
 		cycle = 0;
 
 	}
@@ -114,7 +114,6 @@ public class LinearFitnessController {
 		if (motor_pos.y < 0.5) {
 			setFitness(Float.MAX_VALUE);
 			
-			logger.clear();
 			return true;
 		}
 
@@ -125,8 +124,7 @@ public class LinearFitnessController {
 		// check next gene with accumulated duration (in steps) of the actions
 		if (stepCount >= next_action_step) {
 
-			if ((currentGene + 1) * (cycle + 1) == genes.size()
-					* positionFitness.getCycles()) {
+			if ((currentGene + 1) * (cycle + 1) == genes.size()) {
 
 				// the fitness
 				float score = positionFitness.toRight();
