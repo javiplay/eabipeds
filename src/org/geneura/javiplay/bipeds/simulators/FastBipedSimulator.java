@@ -6,11 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.geneura.javiplay.bipeds.ea.BipedProblem;
-import org.geneura.javiplay.bipeds.logging.BipedLogger;
-import org.geneura.javiplay.bipeds.morphology.BehaviorFitnessController;
-import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
 import org.geneura.javiplay.bipeds.morphology.BipedDataAudit;
+import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.ContactEdge;
@@ -24,10 +21,7 @@ import org.jbox2d.serialization.pb.PbDeserializer;
 import org.jbox2d.serialization.pb.PbSerializer;
 import org.jbox2d.testbed.framework.TestbedSettings;
 
-import es.ugr.osgiliath.evolutionary.elements.FitnessCalculator;
-import es.ugr.osgiliath.evolutionary.individual.Individual;
-
-public class FastBipedSimulator implements Simulator{
+public class FastBipedSimulator implements Simulator {
 
 	private BipedDataAudit dataAudit;
 	private JbDeserializer deserializer  = new PbDeserializer();
@@ -85,7 +79,7 @@ public class FastBipedSimulator implements Simulator{
 		
 		return dataAudit;
 	}
-	@Override
+	
 	public FitnessStepCalculator getFitnessStepCalculator() {
 		
 		return fitnessStepCalculator;
@@ -181,7 +175,7 @@ public class FastBipedSimulator implements Simulator{
 
 	}
 
-	@Override
+	
 	public void simulatorReset() {
 		Vec2 gravity = new Vec2(0, -10f);
 		world = new World(gravity, true);
@@ -209,7 +203,7 @@ public class FastBipedSimulator implements Simulator{
 		return;
 	}
 
-	@Override
+	
 	public void setFitnessStepCalculator(FitnessStepCalculator fitnessStepCalculator) {
 		this.fitnessStepCalculator = fitnessStepCalculator;
 		
@@ -251,6 +245,24 @@ public class FastBipedSimulator implements Simulator{
 		stepCount++;
 
 	}
+
+
+	@Override
+	public void fitnessStepReset() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public boolean fitnessProcessed() {
+		return fitnessStep();
+	}
+
+
+
+
 
 
 

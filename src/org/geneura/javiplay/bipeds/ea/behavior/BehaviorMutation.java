@@ -3,6 +3,7 @@ package org.geneura.javiplay.bipeds.ea.behavior;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.geneura.javiplay.bipeds.ea.UtilParams;
 import org.geneura.javiplay.bipeds.morphology.MotorActions;
 
 import es.ugr.osgiliath.OsgiliathService;
@@ -22,9 +23,9 @@ public class BehaviorMutation extends OsgiliathService implements Mutation {
 
 		// Swap some genes
 		int swaps = (Integer) this.getAlgorithmParameters().getParameter(
-				BehaviorParameters.GENES_SWAPS);
+				UtilParams.GENES_SWAPS);
 		int genome_size = (Integer) this.getAlgorithmParameters().getParameter(
-				BehaviorParameters.GENOME_SIZE);
+				UtilParams.GENOME_SIZE);
 
 		for (int i = 0; i < swaps; i++) {
 			int indexA = rand.nextInt(genome_size);
@@ -40,16 +41,16 @@ public class BehaviorMutation extends OsgiliathService implements Mutation {
 
 		// Mutate some genes
 		int mutations = (Integer) this.getAlgorithmParameters().getParameter(
-				BehaviorParameters.GENES_TO_MUTATE);
+				UtilParams.GENES_TO_MUTATE);
 
 		int maxDurationChange = (Integer) this.getAlgorithmParameters()
-				.getParameter(BehaviorParameters.MAX_DURATION_CHANGE);
-		double maxSpeedChange = (Double) this.getAlgorithmParameters().getParameter(BehaviorParameters.MAX_SPEED_CHANGE);
+				.getParameter(UtilParams.MAX_DURATION_CHANGE);
+		double maxSpeedChange = (Double) this.getAlgorithmParameters().getParameter(UtilParams.MAX_SPEED_CHANGE);
 
 		
 		int minDuration = (Integer) this.getAlgorithmParameters()
-				.getParameter(BehaviorParameters.MIN_ACTION_DURATION);
-		double minSpeed = (Double) this.getAlgorithmParameters().getParameter(BehaviorParameters.MIN_SPEED);
+				.getParameter(UtilParams.MIN_ACTION_DURATION);
+		double minSpeed = (Double) this.getAlgorithmParameters().getParameter(UtilParams.MIN_SPEED);
 		
 		
 		for (int i = 0; i < mutations; i++) {

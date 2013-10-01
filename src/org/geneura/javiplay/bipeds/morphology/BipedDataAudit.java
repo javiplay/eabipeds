@@ -129,7 +129,7 @@ public class BipedDataAudit {
 
 	private void saveContacts(ArrayList<RevoluteJoint> motors) {
 		stanceA = 0;
-		ContactEdge c = motors.get(0).getBodyA().getContactList();
+		ContactEdge c = motors.get(0).getBodyB().getContactList();
 		while (c != null) {
 			if (c.contact.isTouching()) {
 				stanceA = 1;
@@ -138,7 +138,7 @@ public class BipedDataAudit {
 		}
 		
 		stanceB = 0;
-		c = motors.get(0).getBodyB().getContactList();
+		c = motors.get(1).getBodyB().getContactList();
 		while (c != null) {
 			if (c.contact.isTouching()) {
 				stanceB = 1;
@@ -150,5 +150,6 @@ public class BipedDataAudit {
 	public ArrayList<Vec2> getPositions() {
 		return positions;		
 	}
+	
 
 }

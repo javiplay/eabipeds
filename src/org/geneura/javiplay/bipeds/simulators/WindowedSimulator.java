@@ -2,19 +2,14 @@ package org.geneura.javiplay.bipeds.simulators;
 
 import java.util.ArrayList;
 
-import org.geneura.javiplay.bipeds.logging.BipedLogger;
-import org.geneura.javiplay.bipeds.morphology.BehaviorFitnessController;
 import org.geneura.javiplay.bipeds.morphology.BipedDataAudit;
 import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
 import org.jbox2d.dynamics.World;
-import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
 import org.jbox2d.testbed.framework.TestbedSettings;
 import org.jbox2d.testbed.framework.TestbedTest;
 
-import es.ugr.osgiliath.evolutionary.individual.Individual;
-
-public class WindowedSimulator extends TestbedTest implements Simulator{
+public class WindowedSimulator extends TestbedTest implements Simulator {
 	
 	private boolean fitnessHasFinished = false;
 	
@@ -101,30 +96,51 @@ public class WindowedSimulator extends TestbedTest implements Simulator{
 
 
 
-	@Override
+	
 	public FitnessStepCalculator getFitnessStepCalculator() {
-		// TODO Auto-generated method stub
+		
 		return fitnessStepCalculator;
 	}
 
 	@Override
 	public boolean fitnessStep() {
 		
-		return fitnessHasFinished;
+		return true;
 		
 	}
 
-	@Override
+
 	public void setFitnessStepCalculator(
 			FitnessStepCalculator fitnessStepCalculator) {
 		this.fitnessStepCalculator = fitnessStepCalculator;
 		
 	}
 
+
+	@Override	
+	public void reset() {
+		
+		super.reset();
+		fitnessStepCalculator.fitnessStepReset();
+		
+		
+	}
+
+	@Override
+	public void fitnessStepReset() {
+		
+		
+	}
+
 	@Override
 	public void simulatorReset() {
-		// TODO Auto-generated method stub
+		reset();		
+	}
+
+	@Override
+	public boolean fitnessProcessed() {
 		
+		return fitnessHasFinished;
 	}
 
 	

@@ -25,6 +25,7 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 	public boolean showFitness;
 	private int accDuration;
 	private int next_action_step;
+	Simulator sim;
 	
 	
 
@@ -38,17 +39,14 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 		this.fitness = fitness;
 	}
 	
-	public boolean fitnessProcessed() {
-		return ((BipedProblem)getProblem()).getSimulator().fitnessStep();
-	}
-	
+
 
 	
 	
 	
 	public void processGene(BehaviorGene g) {
 		
-		Simulator sim = ((BipedProblem)getProblem()).getSimulator();
+		
 
 		for (int i = 0; i < sim.getJoints().size(); i++) {
 			RevoluteJoint joint = sim.getJoints().get(i);
@@ -82,7 +80,7 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 		this.individual = ind;
 		Simulator sim = ((BipedProblem)getProblem()).getSimulator();
 		sim.simulatorReset();
-		reset();
+		fitnessStepReset();
 		
 		while (!fitnessProcessed());
 		
@@ -92,15 +90,6 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 	}
 
 
-	private void reset() {
-		currentGene = 0;
-		fitness = 0;
-		
-		accDuration = 0;
-		next_action_step = 0;
-		
-		
-	}
 
 	@Override
 	public ArrayList<Fitness> calculateFitnessForAll(ArrayList<Individual> inds) {
@@ -113,9 +102,9 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 
 	@Override
 	public boolean fitnessStep() {
-		Simulator sim = ((BipedProblem)getProblem()).getSimulator();
-		int genesListSize = ((ListGenome) individual.getGenome()).getGeneList().size();
+				
 		ArrayList<Gene> genes= ((ListGenome) individual.getGenome()).getGeneList();
+		int genesListSize = genes.size();
 
 		// check if the biped keeps standing up
 		if (sim.getBipedDataAudit().getPositions().get(0).y < 0.5) {
@@ -137,34 +126,33 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 				return true;
 			}
 
-			
-
 			// accumulate the action duration
 			accDuration += ((BehaviorGene) genes.get(currentGene)).getDuration();
 			next_action_step = accDuration
-					/ (1000 / ((BipedProblem)getProblem()).getSimulator().getSettings().getSetting(TestbedSettings.Hz).value);
+					/ (1000 / sim.getSettings().getSetting(TestbedSettings.Hz).value);
 
 			// execute the action
 			processGene((BehaviorGene) genes.get(currentGene));
-			
-			
-
 		}
+		
 		return false;
 	}
 
 
 
-	@Override
-	public FitnessStepCalculator getFitnessStepCalculator() {
 
-		return this;
+	@Override
+	public void fitnessStepReset() {
+		currentGene = 0;
+		fitness = 0;		
+		accDuration = 0;
+		next_action_step = 0;
+		sim = ((BipedProblem)getProblem()).getSimulator();
 	}
 
-
 	@Override
-	public void setFitnessStepCalculator(
-			FitnessStepCalculator fitnessStepCalculator) {
+	public boolean fitnessProcessed() {				
+		return ((BipedProblem)getProblem()).getSimulator().fitnessProcessed();
 	}
 
 

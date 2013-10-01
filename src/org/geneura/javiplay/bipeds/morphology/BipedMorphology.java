@@ -141,6 +141,105 @@ public class BipedMorphology {
 	}
 	
 	
+public void compassLikeUneven(World w) {
+		
+		// Parameters		
+		float footRadius = 0.05f;
+		float legRadius = 0.05f;
+		float bodyDensity = 1.0f;
+		
+		// Leg A
+		// -----
+
+		// Shapes
+		CircleShape footShapeA = new CircleShape();
+		footShapeA.m_radius = footRadius;
+
+		PolygonShape legShapeA = new PolygonShape();
+		legShapeA.setAsBox(legRadius, 0.4f, new Vec2(0.0f, 0.4f), 0.0f);
+		
+		PolygonShape legAddedShapeA = new PolygonShape();
+		legAddedShapeA.setAsBox(legRadius, 0.2f, new Vec2(0.1f, 0.8f), 0.0f);
+
+
+		// Fixtures
+		FixtureDef fdFootA = new FixtureDef();
+		fdFootA.shape = footShapeA;
+		fdFootA.density = bodyDensity;
+		fdFootA.friction = 1.0f;
+		fdFootA.filter.groupIndex = -1;
+		
+
+		FixtureDef fdLegA = new FixtureDef();
+		fdLegA.shape = legShapeA;
+		fdLegA.density = bodyDensity;
+		fdLegA.filter.groupIndex = -1;
+		
+		FixtureDef fdAddedLegA = new FixtureDef();
+		fdAddedLegA.shape = legAddedShapeA;
+		fdAddedLegA.density = bodyDensity;
+		fdAddedLegA.filter.groupIndex = -1;
+
+
+		// The leg body
+		BodyDef bdA = new BodyDef();
+		bdA.type = BodyType.DYNAMIC;
+		bdA.position.set(0.0f, 0.05f);
+		Body bA = w.createBody(bdA);
+		bA.createFixture(fdLegA);
+		bA.createFixture(fdFootA);
+		bA.createFixture(fdAddedLegA);
+		
+		// Leg B
+		// -----
+
+		// Shapes
+		CircleShape footShapeB = new CircleShape();
+		footShapeB.m_radius = footRadius;
+
+		PolygonShape legShapeB = new PolygonShape();
+		legShapeB.setAsBox(legRadius, 0.4f, new Vec2(0.0f, 0.4f), 0.0f);
+
+		// Fixtures
+		FixtureDef fdFootB = new FixtureDef();
+		fdFootB.shape = footShapeB;
+		fdFootB.density = bodyDensity;
+		fdFootB.friction = 1.0f;
+		fdFootB.filter.groupIndex = -1;
+
+		FixtureDef fdLegB = new FixtureDef();
+		fdLegB.shape = legShapeB;
+		fdLegB.density = bodyDensity;
+		fdLegB.filter.groupIndex = -1;
+		// The leg body
+		BodyDef bdB = new BodyDef();
+		bdB.type = BodyType.DYNAMIC;
+		bdB.position.set(0.0f, 0.05f);
+		Body bB = w.createBody(bdB);
+		bB.createFixture(fdFootB);
+		bB.createFixture(fdLegB);
+
+		// Joint
+		// -----
+		RevoluteJointDef rjdLegs = new RevoluteJointDef();
+		rjdLegs.initialize(bA, bB, new Vec2(0.0f, 0.85f));
+
+		rjdLegs.motorSpeed = -2.0f * MathUtils.PI;
+
+		rjdLegs.maxMotorTorque = 10000.0f;
+		rjdLegs.enableMotor = false;
+
+		rjdLegs.lowerAngle = -0.75f * MathUtils.PI;
+		rjdLegs.upperAngle = 0.75f * MathUtils.PI;
+		rjdLegs.enableLimit = false;
+
+		// rjdLegs.collideConnected = true;
+		RevoluteJoint m_joint = (RevoluteJoint) w.createJoint(rjdLegs);
+		setMotors(new ArrayList<RevoluteJoint>(1));
+		getMotors().add(m_joint);
+		
+
+	}
 	
 public void compassLikeWithHip(World w) {
 		
@@ -264,22 +363,22 @@ public void compassLikeWithHip(World w) {
 	public void threeLinks(World w) {
 		
 		// parameters
-		float footRadius = 0.05f;
+		float footRadius_A = 0.05f;
 		float footRadius_B = 0.05f;
 		
 		float legRadiusX = 0.05f;
 				
 		
-		float legRadiusY = 0.2f;
-		float legRadiusY_B = 0.19f;
+		float legRadiusY_A = 0.2f;
+		float legRadiusY_B = 0.2f;
 
 		Vec2 legPosition = new Vec2(0.0f, 0.05f);
-		Vec2 legPosition_B = new Vec2(0.0f, 0.09f);
+		Vec2 legPosition_B = new Vec2(0.0f, 0.05f);
 		
 		float bodyDensity = 1.0f;
 		
 		PolygonShape upperLegAShape = new PolygonShape();
-		upperLegAShape.setAsBox(legRadiusX, legRadiusY, new Vec2(0.0f, -legRadiusY), 0.0f);
+		upperLegAShape.setAsBox(legRadiusX, legRadiusY_A, new Vec2(0.0f, -legRadiusY_A), 0.0f);
 		
 		
 	
@@ -302,10 +401,10 @@ public void compassLikeWithHip(World w) {
 		// -----
 		// Shapes
 		CircleShape footShapeA = new CircleShape();
-		footShapeA.m_radius = footRadius;
+		footShapeA.m_radius = footRadius_A;
 
 		PolygonShape lowerLegShapeA = new PolygonShape();
-		lowerLegShapeA.setAsBox(legRadiusX, legRadiusY, new Vec2(0.0f, legRadiusY), 0.0f);
+		lowerLegShapeA.setAsBox(legRadiusX, legRadiusY_A, new Vec2(0.0f, legRadiusY_A), 0.0f);
 
 		// Fixtures
 		FixtureDef fixDefFootA = new FixtureDef();
@@ -380,6 +479,7 @@ public void compassLikeWithHip(World w) {
 
 
 		// -----------
+		
 		RevoluteJointDef jointDefUpperLegAWithLowerLegA = new RevoluteJointDef();
 		jointDefUpperLegAWithLowerLegA.initialize(bodyUpperLegA, bodyLowerLegA, new Vec2(0.0f, 0.45f));
 
@@ -390,7 +490,7 @@ public void compassLikeWithHip(World w) {
 		jointDefUpperLegAWithLowerLegA.enableMotor = false;
 
 		jointDefUpperLegAWithLowerLegA.lowerAngle = -0.25f * MathUtils.PI;
-		jointDefUpperLegAWithLowerLegA.upperAngle = 0.25f * MathUtils.PI;
+		jointDefUpperLegAWithLowerLegA.upperAngle = 0.0f * MathUtils.PI;
 		jointDefUpperLegAWithLowerLegA.enableLimit = true;
 		
 		jointDefUpperLegAWithLowerLegA.collideConnected = false;
@@ -406,8 +506,9 @@ public void compassLikeWithHip(World w) {
 		ground(w);
 		//guide(w);
 		//compassLikeWithHip(w);
-		compassLike(w);
-		//threeLinks(w);
+		//compassLikeUneven(w);
+		//compassLike(w);
+		threeLinks(w);
 
 	}
 
