@@ -53,6 +53,7 @@ import es.osgiliath.evolutionary.basicimplementations.selectors.DeterministicTou
 import es.ugr.osgiliath.algorithms.AlgorithmParameters;
 import es.ugr.osgiliath.evolutionary.EvolutionaryAlgorithm;
 import es.ugr.osgiliath.evolutionary.basiccomponents.operators.TPXListCrossover;
+import es.ugr.osgiliath.evolutionary.basiccomponents.operators.UPXListCrossover;
 import es.ugr.osgiliath.evolutionary.basicimplementations.stopcriterions.NGenerationsStopCriterion;
 import es.ugr.osgiliath.evolutionary.elements.FitnessCalculator;
 import es.ugr.osgiliath.evolutionary.elements.Mutator;
@@ -79,8 +80,8 @@ public class LinearControllerTest {
 			sw.start();
 			
 			EvolutionaryAlgorithm algo = new EvolutionaryAlgorithm();
-			HashMapParameters params = UtilParams.LoadParamsFromFile("linearbipedparameters.properties");
-			
+			HashMapParameters params = UtilParams.LoadParamsFromFile("linearparameters.properties");
+			simulator.setParams(params);
 	
 			
 			BipedProblem problem = new BipedProblem();
@@ -118,6 +119,7 @@ public class LinearControllerTest {
 			algo.setParentSelector(parentSelector);
 			
 			//CROSSOVER
+			//UPXListCrossover crossover = new UPXListCrossover();
 			TPXListCrossover crossover = new TPXListCrossover();
 				
 			//RECOMBINATOR
@@ -234,18 +236,19 @@ public class LinearControllerTest {
 			TestbedModel model = new TestbedModel();
 			model.addCategory("My Super Tests"); // add a category
 			
-			WindowedSimulator simulator2 = new WindowedSimulator();			
+			WindowedSimulator winSimulator = new WindowedSimulator();
+			winSimulator.setParams(params);
 			
-			model.addTest(simulator2);
+			model.addTest(winSimulator);
 			
 			TestbedPanel panel = new TestPanelJ2D(model);
 			JFrame testbed = new TestbedFrame(model, panel); 
 			
 			testbed.setVisible(true);
 			testbed.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			problem.setSimulator(simulator2);
+			problem.setSimulator(winSimulator);
 			
-			simulator2.setFitnessStepCalculator((FitnessStepCalculator) controllerFitnessCalculator);
+			winSimulator.setFitnessStepCalculator((FitnessStepCalculator) controllerFitnessCalculator);
 			
 			controllerFitnessCalculator.calculateFitness(solution1);
 			

@@ -1,26 +1,47 @@
 package org.geneura.javiplay.bipeds.simulators;
 
-import java.util.ArrayList;
-
+import org.geneura.javiplay.bipeds.morphology.BipedDataAudit;
 import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
-import org.geneura.javiplay.bipeds.morphology.MotorSpeed;
-import org.jbox2d.common.MathUtils;
 import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
+import org.jbox2d.dynamics.joints.PrismaticJoint;
+
 import org.jbox2d.testbed.framework.TestbedSettings;
 import org.jbox2d.testbed.framework.TestbedTest;
 
-import es.ugr.osgiliath.evolutionary.individual.Individual;
+import es.ugr.osgiliath.util.impl.HashMapParameters;
 
 public class InteractiveBipedSimulator extends TestbedTest {
 
 	
 
-	RevoluteJoint motor;
+	Joint joint;
+	private BipedDataAudit simData;
+	private HashMapParameters params;
+	
+	/**
+	 * @return the params
+	 */
+	public HashMapParameters getParams() {
+		return params;
+	}
+
+	/**
+	 * @param params the params to set
+	 */
+	public void setParams(HashMapParameters params) {
+		this.params = params;
+	}
+
+	@Override
+	public synchronized void step(TestbedSettings settings) {
+		super.step(settings);
+		addTextLine("Energy:" + simData.getTotalEnergy());
+	}
 
 	@Override
 	public String getTestName() {
-		return "interactive";
+		return "Interactive";
 	}
 
 
@@ -29,36 +50,59 @@ public class InteractiveBipedSimulator extends TestbedTest {
 
 		setTitle(getTestName());
 		BipedMorphology initConfig = new BipedMorphology(getWorld());
-		motor = initConfig.getMotors().get(0);
-
-		
+		joint = initConfig.getJoints().get(0);
+		simData = new BipedDataAudit(getWorld(), params);	
 
 	}
 
 
 	@Override
 	  public void keyPressed(char argKeyChar, int argKeyCode) {
-		float speed = 1;
+		float speed = 4;
+		
+		if (PrismaticJoint.class.isInstance(joint)) {
+			 switch (argKeyChar) {
+		      case 's':
+		    	  ((PrismaticJoint)joint).enableMotor(false);
+		        break;
+		      case 'a':
+		    	  ((PrismaticJoint)joint).setMotorSpeed(-speed);
+		    	  ((PrismaticJoint)joint).enableMotor(true);
+		        break;
+		      case 'd':
+		    	  ((PrismaticJoint)joint).setMotorSpeed(speed);
+		    	  ((PrismaticJoint)joint).enableMotor(true);
+		        
+		        break;
+		      case 'w':
+		    	  ((PrismaticJoint)joint).setMotorSpeed(0);
+		    	  ((PrismaticJoint)joint).enableMotor(true);
+		        
+		        break;
+		    }
+		}
+		if (RevoluteJoint.class.isInstance(joint)) {
+			 switch (argKeyChar) {
+		      case 's':
+		    	  ((RevoluteJoint)joint).enableMotor(false);
+		        break;
+		      case 'a':
+		    	  ((RevoluteJoint)joint).setMotorSpeed(-speed);
+		    	  ((RevoluteJoint)joint).enableMotor(true);
+		        break;
+		      case 'd':
+		    	  ((RevoluteJoint)joint).setMotorSpeed(speed);
+		    	  ((RevoluteJoint)joint).enableMotor(true);
+		        
+		        break;
+		      case 'w':
+		    	  ((RevoluteJoint)joint).setMotorSpeed(0);
+		    	  ((RevoluteJoint)joint).enableMotor(true);		        
+		        break;
+		    }
+		}
 	
-	    switch (argKeyChar) {
-	      case 's':
-	    	  motor.enableMotor(false);
-	        break;
-	      case 'a':
-	    	  motor.setMotorSpeed(-speed);
-				motor.enableMotor(true);
-	        break;
-	      case 'd':
-	    	  motor.setMotorSpeed(speed);
-				motor.enableMotor(true);
-	        
-	        break;
-	      case 'w':
-	    	  motor.setMotorSpeed(0);
-				motor.enableMotor(true);
-	        
-	        break;
-	    }
+	   
 	  }
 
 

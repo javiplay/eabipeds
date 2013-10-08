@@ -55,5 +55,7 @@ public class UtilParams {
 	public static final String MAX_WEIGHT_VALUE = "biped.controller.max.weight.value";
 	public static final String WEIGHTS_CHANGE_SD = "biped.controller.weights.change.sd";
 	public static final String TIME_TO_TRY = "biped.controller.time.to.try";		
+	public static final String JOINTS = "biped.controller.joints";
+	public static final String BODIES = "biped.controller.bodies";	
 
 }

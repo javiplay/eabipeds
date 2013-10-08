@@ -83,6 +83,7 @@ public class BehaviorTest {
 			EvolutionaryAlgorithm algo = new EvolutionaryAlgorithm();
 			HashMapParameters params = UtilParams.LoadParamsFromFile("behaviorparameters.properties");
 	
+			simulator.setParams(params);
 			
 			BipedProblem problem = new BipedProblem();
 			problem.setProblemParameters(params);
@@ -188,7 +189,8 @@ public class BehaviorTest {
 			TestbedModel model = new TestbedModel();
 			model.addCategory("Behavior Result"); // add a category
 			
-			WindowedSimulator winSimulator = new WindowedSimulator();			
+			WindowedSimulator winSimulator = new WindowedSimulator();
+			winSimulator.setParams(params);
 			
 			model.addTest(winSimulator);
 			
@@ -205,9 +207,6 @@ public class BehaviorTest {
 			
 			
 			System.out.println("Fitness solution in testbed window: " + solution.getFitness());
-			
-			
-			
 			
 			
 		}

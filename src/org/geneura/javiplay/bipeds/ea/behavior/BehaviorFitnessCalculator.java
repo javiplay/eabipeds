@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.geneura.javiplay.bipeds.ea.BipedProblem;
 
+import org.geneura.javiplay.bipeds.morphology.BipedDataAudit;
 import org.geneura.javiplay.bipeds.simulators.FitnessStepCalculator;
 import org.geneura.javiplay.bipeds.simulators.Simulator;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
@@ -26,6 +27,7 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 	private int accDuration;
 	private int next_action_step;
 	Simulator sim;
+	private double mean;
 	
 	
 
@@ -48,8 +50,8 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 		
 		
 
-		for (int i = 0; i < sim.getJoints().size(); i++) {
-			RevoluteJoint joint = sim.getJoints().get(i);
+		for (int i = 0; i < sim.getBipedDataAudit().getJoints().size(); i++) {
+			RevoluteJoint joint = (RevoluteJoint) sim.getBipedDataAudit().getJoints().get(i);
 			float speed = g.getSpeed();
 
 			switch (g.getActions().get(i)) {
@@ -105,13 +107,20 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 				
 		ArrayList<Gene> genes= ((ListGenome) individual.getGenome()).getGeneList();
 		int genesListSize = genes.size();
+		BipedDataAudit data = sim.getBipedDataAudit();
+		
 
 		// check if the biped keeps standing up
-		if (sim.getBipedDataAudit().getPositions().get(0).y < 0.5) {
+		/*if (sim.getBipedDataAudit().getPositions().get(0).y < 0.5) {
 			setFitness(0);
 			return true;
 		}
-
+		*/
+		double energy = data.getTotalEnergy();
+		
+		mean +=energy; 
+		
+		fitness+=data.getTotalEnergy();
 				// check next gene with accumulated duration (in steps) of the actions
 		if (sim.getStepCount() >= next_action_step) {
 			if (sim.getStepCount() != 1)
@@ -119,10 +128,12 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 
 			if (currentGene == genesListSize) {
 				// the fitness
-				setFitness(sim.getBipedDataAudit().getMaxDistanceFromReference().get(0).x);
+				//setFitness(sim.getBipedDataAudit().getMaxDistanceFromReference().get(0).x);
 				if (showFitness) System.out.println("Fitness live:" + getFitness());
 				
+				fitness /= next_action_step;
 				currentGene = 0;
+				
 				return true;
 			}
 
@@ -148,6 +159,7 @@ public class BehaviorFitnessCalculator extends OsgiliathService implements Fitne
 		accDuration = 0;
 		next_action_step = 0;
 		sim = ((BipedProblem)getProblem()).getSimulator();
+		
 	}
 
 	@Override

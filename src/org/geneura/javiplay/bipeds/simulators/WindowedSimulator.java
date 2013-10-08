@@ -1,19 +1,17 @@
 package org.geneura.javiplay.bipeds.simulators;
 
-import java.util.ArrayList;
-
 import org.geneura.javiplay.bipeds.morphology.BipedDataAudit;
 import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
-import org.jbox2d.dynamics.World;
-import org.jbox2d.dynamics.joints.RevoluteJoint;
 import org.jbox2d.testbed.framework.TestbedSettings;
 import org.jbox2d.testbed.framework.TestbedTest;
+
+import es.ugr.osgiliath.util.impl.HashMapParameters;
 
 public class WindowedSimulator extends TestbedTest implements Simulator {
 	
 	private boolean fitnessHasFinished = false;
 	
-	private BipedDataAudit dataAudit = new BipedDataAudit();
+	private BipedDataAudit simData;
 	TestbedSettings settings = new TestbedSettings();
 	/**
 	 * @return the settings
@@ -28,24 +26,13 @@ public class WindowedSimulator extends TestbedTest implements Simulator {
 	public void setSettings(TestbedSettings settings) {
 		this.settings = settings;
 	}
-	protected World world;
-	private ArrayList<RevoluteJoint> motors;
+	
+	
 	private FitnessStepCalculator fitnessStepCalculator;
-	
-	/**
-	 * @return the motors
-	 */
-	public ArrayList<RevoluteJoint> getMotors() {
-		return motors;
-	}
 
-	/**
-	 * @param motors the motors to set
-	 */
-	public void setMotors(ArrayList<RevoluteJoint> motors) {
-		this.motors = motors;
-	}
+	private HashMapParameters params;
 	
+
 	
 	@Override
 	public String getTestName() {
@@ -56,40 +43,48 @@ public class WindowedSimulator extends TestbedTest implements Simulator {
 	@Override
 	public void initTest(boolean arg0) {
 
-		BipedMorphology initConfig = new BipedMorphology(m_world);
-		setMotors(initConfig.getMotors());
-		dataAudit.reset(initConfig.getMotors().size());
-		
+		new BipedMorphology(m_world);
+		simData = new BipedDataAudit(m_world, params);
+		simData.reset();		
 	}
 	
 	
-	@Override
-	public ArrayList<RevoluteJoint> getJoints() {
-		
-		return motors;
+
+	/**
+	 * @return the params
+	 */
+	public HashMapParameters getParams() {
+		return params;
+	}
+
+	/**
+	 * @param params the params to set
+	 */
+	public void setParams(HashMapParameters params) {
+		this.params = params;
 	}
 
 	@Override
-	public BipedDataAudit getBipedDataAudit() {
-		
-		return dataAudit;
+	public BipedDataAudit getBipedDataAudit() {		
+		return simData;
 	}
 	
 	@Override
 	public void step(TestbedSettings settings) {
 		super.step(settings);
-		dataAudit.save(motors);
+		simData.save();
 		
 		if (fitnessStepCalculator != null) {
 			fitnessHasFinished = fitnessStepCalculator.fitnessStep();
 		}
 		
-		addTextLine("Joint speed: " + motors.get(0).getJointSpeed());
+		//addTextLine("Joint speed: " + ((RevoluteJoint) joints.get(0)).getJointSpeed());
 		
-		addTextLine("Joint: (X=" + dataAudit.getPositions().get(0).x + ", Y=" + dataAudit.getPositions().get(0).y);
-		addTextLine("Contacts: (A=" + dataAudit.getStanceA() + ", B=" + dataAudit.getStanceB() + ")");
+		addTextLine("Joint: (X=" + simData.getPositions().get(0).x + ", Y=" + simData.getPositions().get(0).y);
+		addTextLine("Contacts: (A=" + simData.getFootContactA() + ", B=" + simData.getFootContactB() + ")");
 		
 		addTextLine("Simulation Steps: " + getStepCount());
+		addTextLine("Energy: "+simData.getTotalEnergy());
 		
 		
 	}
@@ -142,6 +137,8 @@ public class WindowedSimulator extends TestbedTest implements Simulator {
 		
 		return fitnessHasFinished;
 	}
+
+	
 
 	
 

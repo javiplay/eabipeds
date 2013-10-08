@@ -3,6 +3,8 @@ package org.geneura.javiplay.bipeds.tests;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.jbox2d.common.Vec2;
+
 import com.heatonresearch.book.introneuralnet.neural.feedforward.FeedforwardLayer;
 import com.heatonresearch.book.introneuralnet.neural.feedforward.FeedforwardNetwork;
 import com.heatonresearch.book.introneuralnet.neural.matrix.Matrix;
@@ -42,8 +44,22 @@ public class JavaTest {
 		}
 		double val = 1/(1+Math.exp(-(m.get(0, 0) + m.get(1, 0) + m.get(2, 0)) ));
 		System.out.println("val " +val);
-			
+		
+		Vec2 v = new Vec2(-0.0f, -1.0f);
+		System.out.println("Vector length:" +v.length());
+		
+		System.out.println("angle:" + normalizeAngle(1.9*Math.PI));
+		
+		 
 		
 		
  }
+ 
+ 
+ public static double normalizeAngle(double a) {
+     return a - (2*Math.PI) * Math.floor(a / (2*Math.PI));
+ }
+ 
+ 
+ 
 }

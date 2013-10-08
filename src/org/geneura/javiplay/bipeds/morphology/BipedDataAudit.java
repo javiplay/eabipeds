@@ -2,55 +2,115 @@ package org.geneura.javiplay.bipeds.morphology;
 
 import java.util.ArrayList;
 
+import org.geneura.javiplay.bipeds.ea.UtilParams;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.ContactEdge;
+import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
 
+import es.ugr.osgiliath.util.impl.HashMapParameters;
+
 public class BipedDataAudit {
-
-	ArrayList<Vec2> positions = new ArrayList<Vec2>();
-	private ArrayList<Vec2> lastPositions = new ArrayList<Vec2>();
-	ArrayList<Vec2> velocities = new ArrayList<Vec2>();
 	
-	Vec2 target = new Vec2(20.0f, 1.0f);
-	Vec2 reference = new Vec2(0.0f, 0.0f);
-	
-	private int stanceA;
-	/**
-	 * @return the stanceA
-	 */
-	public int getStanceA() {
-		return stanceA;
-	}
-
-	/**
-	 * @param stanceA the stanceA to set
-	 */
-	public void setStanceA(int stanceA) {
-		this.stanceA = stanceA;
-	}
-
-	private int stanceB;
-	
-	
+	private int footContactA;
 
 	
 	
-	/**
-	 * @return the stanceB
-	 */
-	public int getStanceB() {
-		return stanceB;
-	}
-
-	/**
-	 * @param stanceB the stanceB to set
-	 */
-	public void setStanceB(int stanceB) {
-		this.stanceB = stanceB;
-	}
-
+	private int footContactB;
+	private ArrayList<Vec2> lastPositions;
+	ArrayList<Vec2> maxDistanceFromReference = new ArrayList<Vec2>();
+	
 	ArrayList<Vec2> minDistancesToTarget = new ArrayList<Vec2>();
+	ArrayList<Vec2> positions;
+	
+	
+	Vec2 reference = new Vec2(0.0f, 0.0f);
+
+	Vec2 target = new Vec2(20.0f, 1.0f);
+	
+	ArrayList<Vec2> velocities;
+	
+
+	World world;
+
+
+
+	private HashMapParameters params;
+	
+	
+
+	
+	
+	public BipedDataAudit(World world, HashMapParameters params) {
+		this.params = params;
+		this.world = world;
+		reset();
+	}
+	public ArrayList<Body> getBodies() {
+		
+		Body b = world.getBodyList();
+		ArrayList<Body> bodies = new ArrayList<Body>();
+		
+		while (b!= null) {
+			if (b.getType() == BodyType.DYNAMIC) {
+				bodies.add(b);
+			}
+			b = b.getNext();
+		}
+		return bodies;
+	}
+
+	public int getFootContactA() {
+		return footContactA;
+	}
+	
+	public int getFootContactB() {
+		return footContactB;
+	}
+
+	public ArrayList<Joint> getJoints() {
+		
+		Joint j = world.getJointList();
+		ArrayList<Joint> joints = new ArrayList<Joint>();
+		int nJoints = (Integer) params.getParameter(UtilParams.JOINTS);
+		int n=0;
+		while (j!= null && n<nJoints) {
+			joints.add(j);
+			j = j.getNext();
+			n++;
+		}
+		return joints;
+	}
+
+	public ArrayList<Vec2> getJointsPos() {
+		ArrayList<Vec2> jointsPos=new ArrayList<Vec2>();
+		for (Joint motor: getJoints()) {
+			Vec2 pos = new Vec2();
+			motor.getAnchorA(pos);
+			jointsPos.add(pos);			
+		}
+		return jointsPos;		
+	}
+
+	
+
+	public ArrayList<Vec2> getLastPositions() {
+		return lastPositions;
+	}
+
+
+	/**
+	 * @return the maxDistanceFromReference
+	 */
+	public ArrayList<Vec2> getMaxDistanceFromReference() {
+		return maxDistanceFromReference;
+	}
+	
+	
+
 	/**
 	 * @return the minDistancesToTarget
 	 */
@@ -58,32 +118,107 @@ public class BipedDataAudit {
 		return minDistancesToTarget;
 	}
 
-	ArrayList<Vec2> maxDistanceFromReference = new ArrayList<Vec2>();
-	
-	/**
-	 * @return the maxDistanceFromReference
-	 */
-	public ArrayList<Vec2> getMaxDistanceFromReference() {
-		return maxDistanceFromReference;
+	public ArrayList<Vec2> getPositions() {
+		return positions;
 	}
-
-	public ArrayList<Vec2> getLastPositions() {
-		return lastPositions;
-	}
-
-	public void setLastPositions(ArrayList<Vec2> lastJointsPosition) {
-		this.lastPositions = lastJointsPosition;
-	}
-
 	
-	
-	float toSpeedCycling() {
+	double getPotentialEnergy(Body b) {
+		double m = b.getMass();
+		double g = world.getGravity().length();
+		Vec2 p = b.getWorldCenter();
+		//System.out.println("X: "+p.x+", Y: "+p.y);
 		
-		return 0;
 		
+		double h = p.y;
+		
+		double E = m*g*h;
+		return E;		
+	}
+	
+	double getKineticEnergy(Body b) {
+		double m = b.getMass();
+		Vec2 v = b.getLinearVelocityFromLocalPoint(b.getLocalCenter());
+		double w = b.getAngularVelocity();
+		double I = b.getInertia();
+		double E = 0.5*m*v.lengthSquared() + 0.5*I*w*w;
+		return E;
 	}
 
-
+	public double getTotalEnergy() {
+		// calculate potential energy of bodies
+		double potentialEnergy =0;
+		double kineticEnergy = 0;
+		for (Body b: getBodies()) {
+			potentialEnergy += getPotentialEnergy(b);
+			kineticEnergy += getKineticEnergy(b);
+		}
+		return potentialEnergy + kineticEnergy;
+	}
+	
+	public double getTotalPotentialEnergy() {
+		// calculate potential energy of bodies
+		double potentialEnergy =0;
+		
+		for (Body b: getBodies()) {
+			potentialEnergy += getPotentialEnergy(b);
+		
+		}
+		return potentialEnergy;
+	}
+	public double getTotalKineticEnergy() {
+		// calculate potential energy of bodies
+		
+		double kineticEnergy = 0;
+		for (Body b: getBodies()) {
+			kineticEnergy += getKineticEnergy(b);
+		}
+		return kineticEnergy;
+	}
+	
+	public void reset() {
+		int size = world.getJointCount();
+		
+		minDistancesToTarget = new ArrayList<Vec2>();
+		maxDistanceFromReference = new ArrayList<Vec2>(size);
+		positions = new ArrayList<Vec2>(size);
+		lastPositions = new ArrayList<Vec2>(size);
+		for (int i=0;i<size;i++) {
+			minDistancesToTarget.add(new Vec2(Float.MAX_VALUE, Float.MAX_VALUE));
+			maxDistanceFromReference.add(new Vec2(0f,0f));
+			positions.add(new Vec2(0f,0f));
+			lastPositions.add(new Vec2(0f,0f));							
+		}		
+	}
+	
+	public void save() {
+		
+		world.getJointList();		  		
+		savePositions(getJointsPos());		
+		saveContacts(getJoints());
+		
+	}
+	
+	private void saveContacts(ArrayList<Joint> joints) {
+		footContactA = 0;
+		ContactEdge c = joints.get(0).getBodyB().getContactList();
+		while (c != null) {
+			if (c.contact.isTouching()) {
+				footContactA = 1;
+			}
+			c = c.next;
+		}
+		
+		footContactB = 0;
+		c = joints.get(1).getBodyB().getContactList();
+		while (c != null) {
+			if (c.contact.isTouching()) {
+				footContactB = 1;
+			}
+			c = c.next;
+		}
+	}
+	
+	
 	private void savePositions(ArrayList<Vec2> jointsPos) {
 		
 		setLastPositions(positions);
@@ -98,58 +233,11 @@ public class BipedDataAudit {
 			i++;
 		}
 	}
-
-
-	public void reset(int size) {
-		
-		minDistancesToTarget = new ArrayList<Vec2>();
-		maxDistanceFromReference = new ArrayList<Vec2>(size);
-		positions = new ArrayList<Vec2>(size);
-		lastPositions = new ArrayList<Vec2>(size);
-		for (int i=0;i<size;i++) {
-			minDistancesToTarget.add(new Vec2(Float.MAX_VALUE, Float.MAX_VALUE));
-			maxDistanceFromReference.add(new Vec2(0f,0f));
-			positions.add(new Vec2(0f,0f));
-			lastPositions.add(new Vec2(0f,0f));							
-		}		
-	}
-
-	public void save(ArrayList<RevoluteJoint> motors) {
-		ArrayList<Vec2>positions = new ArrayList<Vec2>();
-		for (RevoluteJoint joint: motors) {
-			Vec2 p = new Vec2();
-			joint.getAnchorA(p);
-			positions.add(p);	
-		}
-		savePositions(positions);
-		
-		saveContacts(motors);
-		
-	}
-
-	private void saveContacts(ArrayList<RevoluteJoint> motors) {
-		stanceA = 0;
-		ContactEdge c = motors.get(0).getBodyB().getContactList();
-		while (c != null) {
-			if (c.contact.isTouching()) {
-				stanceA = 1;
-			}
-			c = c.next;
-		}
-		
-		stanceB = 0;
-		c = motors.get(1).getBodyB().getContactList();
-		while (c != null) {
-			if (c.contact.isTouching()) {
-				stanceB = 1;
-			}
-			c = c.next;
-		}
-	}
-
-	public ArrayList<Vec2> getPositions() {
-		return positions;		
-	}
 	
+	
+	public void setLastPositions(ArrayList<Vec2> lastJointsPosition) {
+		this.lastPositions = lastJointsPosition;
+	}
+
 
 }

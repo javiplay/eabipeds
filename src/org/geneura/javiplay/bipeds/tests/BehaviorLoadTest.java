@@ -52,6 +52,7 @@ public class BehaviorLoadTest {
 		model.addCategory("Loaded Linear"); // add a category
 
 		WindowedSimulator winSimulator = new WindowedSimulator();
+		
 		model.addTest(winSimulator);
 		
 		TestbedPanel panel = new TestPanelJ2D(model);

@@ -47,12 +47,14 @@ public class LinearControllerLoadTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		HashMapParameters params = UtilParams.LoadParamsFromFile("linearparameters.properties");		
 		
 		// PHYSICS SIMULATION
 		TestbedModel model = new TestbedModel();
-		model.addCategory("Loaded Behavior"); // add a category
-
+		model.addCategory("Loaded Controller"); // add a category
+		
 		WindowedSimulator winSimulator = new WindowedSimulator();
+		winSimulator.setParams(params);
 		model.addTest(winSimulator);
 		
 		TestbedPanel panel = new TestPanelJ2D(model);
@@ -63,7 +65,6 @@ public class LinearControllerLoadTest {
 
 		
 		
-		HashMapParameters params = UtilParams.LoadParamsFromFile("linearparameters.properties");		
 		BipedProblem problem = new BipedProblem();
 		problem.setProblemParameters(params);
 		problem.setSimulator(winSimulator);		

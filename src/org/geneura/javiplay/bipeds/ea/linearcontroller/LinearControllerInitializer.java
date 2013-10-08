@@ -2,7 +2,9 @@ package org.geneura.javiplay.bipeds.ea.linearcontroller;
 
 import java.util.ArrayList;
 
+import org.geneura.javiplay.bipeds.ea.BipedProblem;
 import org.geneura.javiplay.bipeds.ea.UtilParams;
+import org.geneura.javiplay.bipeds.simulators.Simulator;
 
 
 
@@ -22,7 +24,14 @@ public class LinearControllerInitializer extends OsgiliathService implements Ini
 	@Override
 	public ArrayList<Individual> initializeIndividuals(int size) {
 		ArrayList<Individual> list = new ArrayList<Individual>(size);
-		int genomeSize = (Integer) getAlgorithmParameters().getParameter(UtilParams.GENOME_SIZE);
+		Simulator sim = ((BipedProblem) getProblem()).getSimulator();
+		sim.simulatorReset();
+		
+		int bodies = sim.getBipedDataAudit().getBodies().size();
+		int joints =  sim.getBipedDataAudit().getJoints().size();
+		// (sin cos vel per body + 2 contacts + 1 bias )x(2 outputs per joint)
+		int genomeSize = (2*joints)*(3*bodies + 2 + 1); 
+		
 		double minWeightValue = (Double) getAlgorithmParameters().getParameter(UtilParams.MIN_WEIGHT_VALUE);
 		double maxWeightValue = (Double) getAlgorithmParameters().getParameter(UtilParams.MAX_WEIGHT_VALUE);
 		boolean calculateFitness = (Boolean) getAlgorithmParameters().getParameter(UtilParams.FITNESS_AT_INIT);
