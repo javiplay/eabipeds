@@ -32,9 +32,11 @@ public class BipedMorphology {
 		PolygonShape shape = new PolygonShape();
 		shape.setAsEdge(new Vec2(-1000.0f, 0.0f), new Vec2(1000.0f, -0.0f));
 		ground.createFixture(shape, 0.0f).setFriction(1.0f);
+		
+		
+		
+
 	}
-	
-	
 	
 	public void guide(World w) {
 		
@@ -143,82 +145,6 @@ public class BipedMorphology {
 
 	}
 	
-public void simplePendulum(World w) {
-	
-		
-		// Parameters		
-		float footRadius = 0.02f;
-		float legRadius = 0.02f;
-		float bodyDensity = 1.0f;
-		
-		
-		// Static box
-		// 
-		PolygonShape wallShape = new PolygonShape();
-		wallShape.setAsBox(0.1f, 0.1f);
-		
-	
-		BodyDef bdWall = new BodyDef();
-		bdWall.position = new Vec2(0.0f, 1.6f);
-		
-		Body wall = w.createBody(bdWall);
-		
-		wall.createFixture(wallShape, 0.0f);
-		
-		
-		
-		// Leg A
-		// -----
-
-		// Shapes
-		CircleShape footShapeA = new CircleShape();
-		footShapeA.m_radius = footRadius;
-
-		PolygonShape legShapeA = new PolygonShape();
-		legShapeA.setAsBox(legRadius, 0.4f, new Vec2(0.0f, 0.4f), 0.0f);
-
-		// Fixtures
-		FixtureDef fdFootA = new FixtureDef();
-		fdFootA.shape = footShapeA;
-		fdFootA.density = bodyDensity;
-		fdFootA.friction = 1.0f;
-		fdFootA.filter.groupIndex = -1;
-		
-
-		FixtureDef fdLegA = new FixtureDef();
-		fdLegA.shape = legShapeA;
-		fdLegA.density = bodyDensity;
-		fdLegA.filter.groupIndex = -1;
-
-		// The leg body
-		BodyDef bdA = new BodyDef();
-		bdA.type = BodyType.DYNAMIC;
-		bdA.position.set(0.0f, 1.6f);
-		Body bA = w.createBody(bdA);
-		bA.createFixture(fdLegA);
-		bA.createFixture(fdFootA);
-		
-
-		// Joint
-		// -----
-		RevoluteJointDef rjdWall = new RevoluteJointDef();
-		rjdWall.initialize(wall, bA, new Vec2(0.0f, 1.6f));
-		rjdWall.motorSpeed = -2.0f * MathUtils.PI;
-
-		rjdWall.maxMotorTorque = 10000.0f;
-		rjdWall.enableMotor = false;
-
-		rjdWall.lowerAngle = -0.75f * MathUtils.PI;
-		rjdWall.upperAngle = 0.75f * MathUtils.PI;
-		rjdWall.enableLimit = false;
-
-		joints = new ArrayList<Joint>();
-		joints.add(w.createJoint(rjdWall));
-
-		
-
-	}
-
 	
 public void doublePendulum(World w) {
 	
@@ -549,7 +475,7 @@ public void compassLikeWithHip(World w) {
 		
 	}
 	
-public void threeLinksOneKneeAsymetric(World w) {
+public void threeLinksOneKnee(World w) {
 	
 	// parameters
 	float footRadius_A = 0.05f;
@@ -579,6 +505,8 @@ public void threeLinksOneKneeAsymetric(World w) {
 	fixDefUpperLegA.filter.groupIndex = -1;
 	
 	
+
+	
 	
 	// body
 	BodyDef bodyDefUpperLegA = new BodyDef();
@@ -595,7 +523,7 @@ public void threeLinksOneKneeAsymetric(World w) {
 	footShapeA.m_radius = footRadius_A;
 
 	PolygonShape lowerLegShapeA = new PolygonShape();
-	lowerLegShapeA.setAsBox(legRadiusX, legRadiusY_A+0.01f, new Vec2(0.0f, legRadiusY_A+0.01f), 0.0f);
+	lowerLegShapeA.setAsBox(legRadiusX, legRadiusY_A, new Vec2(0.0f, legRadiusY_A), 0.0f);
 
 	// Fixtures
 	FixtureDef fixDefFootA = new FixtureDef();
@@ -612,7 +540,7 @@ public void threeLinksOneKneeAsymetric(World w) {
 	// The leg body
 	BodyDef bodyDefLowerLegA = new BodyDef();
 	bodyDefLowerLegA.type = BodyType.DYNAMIC;
-	bodyDefLowerLegA.position.set(legPosition.x, legPosition.y-0.01f);
+	bodyDefLowerLegA.position.set(legPosition);
 	Body bodyLowerLegA = w.createBody(bodyDefLowerLegA);
 	bodyLowerLegA.createFixture(fixDefFootA);
 	bodyLowerLegA.createFixture(fixDefLowerLegA);
@@ -670,7 +598,7 @@ public void threeLinksOneKneeAsymetric(World w) {
 
 	jointDefUpperLegAWithLegB.lowerAngle = -0.75f * MathUtils.PI;
 	jointDefUpperLegAWithLegB.upperAngle = 0.75f * MathUtils.PI;
-	jointDefUpperLegAWithLegB.enableLimit = true;
+	jointDefUpperLegAWithLegB.enableLimit = false;
 
 	jointDefUpperLegAWithLegB.collideConnected = true;
 	RevoluteJoint hipJoint = (RevoluteJoint) w.createJoint(jointDefUpperLegAWithLegB);
@@ -690,10 +618,10 @@ public void threeLinksOneKneeAsymetric(World w) {
 	jointDefUpperLegAWithLowerLegA.maxMotorTorque = 10000.0f;
 	jointDefUpperLegAWithLowerLegA.enableMotor = false;
 
-	jointDefUpperLegAWithLowerLegA.lowerAngle = (float) (-0.5f*Math.PI);
+	jointDefUpperLegAWithLowerLegA.lowerAngle = (float) (-0.15f*Math.PI);
 	jointDefUpperLegAWithLowerLegA.upperAngle = (float) (0.15f*Math.PI);
 	jointDefUpperLegAWithLowerLegA.collideConnected = false;
-	jointDefUpperLegAWithLowerLegA.enableLimit = true;
+	jointDefUpperLegAWithLowerLegA.enableLimit = false;
 	
 	jointDefUpperLegAWithLowerLegA.collideConnected = false;
 	RevoluteJoint kneeJoint = (RevoluteJoint) w.createJoint(jointDefUpperLegAWithLowerLegA);
@@ -849,14 +777,13 @@ public void threeLinksOneKneeAsymetric(World w) {
 
 	public BipedMorphology(World w) {
 
-		//ground(w);
+		ground(w);
 		//guide(w);
 		//compassLikeWithHip(w);
 		//compassLikeUneven(w);
 		//compassLike(w);
-		//threeLinksOneKneeAsymetric(w);
+		threeLinksOneKnee(w);
 		//doublePendulum(w);
-		simplePendulum(w);
 
 	}
 
@@ -866,161 +793,5 @@ public void threeLinksOneKneeAsymetric(World w) {
 
 	public void setMotors(ArrayList<Joint> joints) {
 		this.joints = joints;
-	}
-
-	public void threeLinksOneKnee(World w) {
-		
-		// parameters
-		float footRadius_A = 0.08f;
-		float footRadius_B = 0.05f;
-		
-		float legRadiusX = 0.05f;
-				
-		
-		float legRadiusY_A = 0.2f;
-		float legRadiusY_B = 0.2f;
-	
-		Vec2 legPosition = new Vec2(0.0f, 0.05f);
-		Vec2 legPosition_B = new Vec2(0.0f, 0.05f);
-		
-		float bodyDensity = 1.0f;
-		
-		PolygonShape upperLegAShape = new PolygonShape();
-		upperLegAShape.setAsBox(legRadiusX, legRadiusY_A, new Vec2(0.0f, -legRadiusY_A), 0.0f);
-		
-		
-	
-		// Fixture
-		FixtureDef fixDefUpperLegA = new FixtureDef();
-		fixDefUpperLegA.shape = upperLegAShape;
-		fixDefUpperLegA.density = bodyDensity;
-		fixDefUpperLegA.friction = 1.0f;
-		fixDefUpperLegA.filter.groupIndex = -1;
-		
-		
-	
-		
-		
-		// body
-		BodyDef bodyDefUpperLegA = new BodyDef();
-		bodyDefUpperLegA.type = BodyType.DYNAMIC;
-		bodyDefUpperLegA.position.set(0.0f, 0.85f);
-		Body bodyUpperLegA = w.createBody(bodyDefUpperLegA);
-		bodyUpperLegA.createFixture(fixDefUpperLegA);
-		
-	
-		// Leg A
-		// -----
-		// Shapes
-		CircleShape footShapeA = new CircleShape();
-		footShapeA.m_radius = footRadius_A;
-	
-		PolygonShape lowerLegShapeA = new PolygonShape();
-		lowerLegShapeA.setAsBox(legRadiusX, legRadiusY_A, new Vec2(0.0f, legRadiusY_A), 0.0f);
-	
-		// Fixtures
-		FixtureDef fixDefFootA = new FixtureDef();
-		fixDefFootA.shape = footShapeA;
-		fixDefFootA.density = bodyDensity;
-		fixDefFootA.friction = 1.0f;
-		fixDefFootA.filter.groupIndex = -1;
-	
-		FixtureDef fixDefLowerLegA = new FixtureDef();
-		fixDefLowerLegA.shape = lowerLegShapeA;
-		fixDefLowerLegA.density = bodyDensity;
-		fixDefLowerLegA.filter.groupIndex = -1;
-	
-		// The leg body
-		BodyDef bodyDefLowerLegA = new BodyDef();
-		bodyDefLowerLegA.type = BodyType.DYNAMIC;
-		bodyDefLowerLegA.position.set(legPosition);
-		Body bodyLowerLegA = w.createBody(bodyDefLowerLegA);
-		bodyLowerLegA.createFixture(fixDefFootA);
-		bodyLowerLegA.createFixture(fixDefLowerLegA);
-	
-		// Leg B
-		// -----
-	
-		// Shapes
-		CircleShape footShapeB = new CircleShape();
-		footShapeB.m_radius = footRadius_B;
-		
-		//PolygonShape legAddedShape = new PolygonShape();
-		//legAddedShape.setAsBox(0.1f, 0.1f, new Vec2(0.05f, 0.8f), 0.0f);
-	
-		PolygonShape legShapeB = new PolygonShape();
-		legShapeB.setAsBox(legRadiusX, legRadiusY_B*2, new Vec2(0.0f, legRadiusY_B*2), 0.0f);
-	
-		// Fixtures
-		FixtureDef fixDefFootB = new FixtureDef();
-		fixDefFootB.shape = footShapeB;
-		fixDefFootB.density = bodyDensity;
-		fixDefFootB.friction = 1.0f;
-		fixDefFootB.filter.groupIndex = -1;
-	
-		FixtureDef fixDefLegB = new FixtureDef();
-		fixDefLegB.shape = legShapeB;
-		fixDefLegB.density = bodyDensity;
-		fixDefLegB.filter.groupIndex = -1;
-		/*
-		FixtureDef fdAddedLeg = new FixtureDef();
-		fdAddedLeg.shape = legAddedShape;
-		fdAddedLeg.density = bodyDensity;
-		fdAddedLeg.filter.groupIndex = -1;
-		 */
-		// The leg body
-		BodyDef bodyDefLegB = new BodyDef();
-		bodyDefLegB.type = BodyType.DYNAMIC;
-		bodyDefLegB.position.set(legPosition_B);
-		Body bodyLegB = w.createBody(bodyDefLegB);
-		bodyLegB.createFixture(fixDefFootB);
-		bodyLegB.createFixture(fixDefLegB);
-		//bodyLegB.createFixture(fdAddedLeg);
-	
-		
-		// Joints
-		// -----
-		RevoluteJointDef jointDefUpperLegAWithLegB = new RevoluteJointDef();
-		jointDefUpperLegAWithLegB.initialize(bodyUpperLegA, bodyLegB, new Vec2(0.0f, 0.85f));
-		
-	
-		jointDefUpperLegAWithLegB.motorSpeed = MathUtils.PI;
-	
-		jointDefUpperLegAWithLegB.maxMotorTorque = 10000.0f;
-		jointDefUpperLegAWithLegB.enableMotor = false;
-	
-		jointDefUpperLegAWithLegB.lowerAngle = -0.75f * MathUtils.PI;
-		jointDefUpperLegAWithLegB.upperAngle = 0.75f * MathUtils.PI;
-		jointDefUpperLegAWithLegB.enableLimit = true;
-	
-		jointDefUpperLegAWithLegB.collideConnected = true;
-		RevoluteJoint hipJoint = (RevoluteJoint) w.createJoint(jointDefUpperLegAWithLegB);
-		setMotors(new ArrayList<Joint>(1));
-		getJoints().add(hipJoint);
-	
-	
-		// -----------
-		
-		RevoluteJointDef jointDefUpperLegAWithLowerLegA = new RevoluteJointDef();
-		
-		jointDefUpperLegAWithLowerLegA.initialize(bodyUpperLegA, bodyLowerLegA, new Vec2(0.0f, 0.45f));
-	
-	
-		jointDefUpperLegAWithLowerLegA.motorSpeed = MathUtils.PI;
-	
-		jointDefUpperLegAWithLowerLegA.maxMotorTorque = 10000.0f;
-		jointDefUpperLegAWithLowerLegA.enableMotor = false;
-	
-		jointDefUpperLegAWithLowerLegA.lowerAngle = (float) (-0.5f*Math.PI);
-		jointDefUpperLegAWithLowerLegA.upperAngle = (float) (0.15f*Math.PI);
-		jointDefUpperLegAWithLowerLegA.collideConnected = false;
-		jointDefUpperLegAWithLowerLegA.enableLimit = true;
-		
-		jointDefUpperLegAWithLowerLegA.collideConnected = false;
-		RevoluteJoint kneeJoint = (RevoluteJoint) w.createJoint(jointDefUpperLegAWithLowerLegA);
-	
-		setMotors(new ArrayList<Joint>());
-		getJoints().add(hipJoint);
-		getJoints().add(kneeJoint);
 	}
 }

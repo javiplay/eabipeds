@@ -86,16 +86,15 @@ public class LinearControllerFitnessCalculator extends OsgiliathService
 			// simulationSteps);
 
 			// setFitness(0.5*distancePerUnit + 0.5*(1-workPerUnit));
-			setFitness(data.getMaxDistanceFromReference().get(0).x);
+			// setFitness(data.getMaxDistanceFromReference().get(0).x);
 
 			// setFitness(0.5*Math.max(0,-(Math.abs(mean-1))+1) +
 			// 0.5*Math.max(0, 1-var));
 
-			//setFitness(mean);
-			//setFitness(0.5 * Math.max(0, 1 - (Math.abs(mean - 1.2)))//+ 
+			setFitness(0.5 * Math.max(0, 1 - (Math.abs(mean - 0.9))) 
 			// 0.2 * (1 - workPerUnit) +
 			//0.5 * Math.max(0, 1 - var)
-			//);
+			);
 
 			// setFitness(0.7*Math.max(0,-(Math.abs(mean-1))+1));
 			return true;
@@ -129,7 +128,7 @@ public class LinearControllerFitnessCalculator extends OsgiliathService
 			Joint joint = sim.getBipedDataAudit().getJoints().get(i);
 			if (RevoluteJoint.class.isInstance(joint)) {
 				RevoluteJoint j = (RevoluteJoint) joint;
-				j.setMotorSpeed(3 * (float) outputs[index++]);
+				j.setMotorSpeed(2 * (float) outputs[index++]);
 				j.enableMotor(true);
 			}
 

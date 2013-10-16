@@ -36,7 +36,7 @@ public class InteractiveBipedSimulator extends TestbedTest {
 	@Override
 	public synchronized void step(TestbedSettings settings) {
 		super.step(settings);
-		addTextLine("Energy:" + simData.getTotalEnergy());		
+		addTextLine("Energy:" + simData.getTotalEnergy());
 	}
 
 	@Override

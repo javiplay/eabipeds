@@ -54,8 +54,7 @@ public class BehaviorInitializer extends OsgiliathService implements Initializer
 					duration += rand.nextInt(maxDuration-minDuration);
 				}
 				
-				//float speed = (float) (minSpeed + rand.nextFloat()*(float)(maxSpeed-minSpeed));
-				float speed = (float) maxSpeed;
+				float speed = (float) (minSpeed + rand.nextFloat()*(float)(maxSpeed-minSpeed));
 				
 				BehaviorGene gene = new BehaviorGene(actions, duration, speed);				
 				genes.add(gene);
