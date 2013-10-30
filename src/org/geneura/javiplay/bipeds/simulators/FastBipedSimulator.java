@@ -60,7 +60,8 @@ public class FastBipedSimulator implements Simulator {
 	}
 
 	public void initTest() {
-		new BipedMorphology(world);
+		//new BipedMorphology(world);
+		BipedMorphology.asThreeLinksOneKnee(world);
 		simData = new BipedDataAudit(world, params);
 	}
 

@@ -53,10 +53,10 @@ public class LinearControllerFitnessCalculator extends OsgiliathService
 		BipedDataAudit data = sim.getBipedDataAudit();
 
 		// check if the biped keeps standing up
-		/*
-		 * if (data.getPositions().get(0).y < 0.6) { setFitness(0); return true;
-		 * }
-		 */
+		
+		 if (data.getPositions().get(0).y < 0.4) { setFitness(0); return true;
+		 }
+		
 
 		double outputs[] = network
 				.computeOutputs(getInputs());
@@ -79,6 +79,8 @@ public class LinearControllerFitnessCalculator extends OsgiliathService
 
 			// set the fitness
 			var = var - mean * mean;
+			
+			setFitness(data.getMaxDistanceFromReference().get(0).x);
 
 			// double distancePerUnit =
 			// data.getMaxDistanceFromReference().get(0).x/10;
@@ -91,10 +93,10 @@ public class LinearControllerFitnessCalculator extends OsgiliathService
 			// setFitness(0.5*Math.max(0,-(Math.abs(mean-1))+1) +
 			// 0.5*Math.max(0, 1-var));
 
-			setFitness(0.5 * Math.max(0, 1 - (Math.abs(mean - 0.9))) 
+			/*setFitness(0.5 * Math.max(0, 1 - (Math.abs(mean - 0.9))) 
 			// 0.2 * (1 - workPerUnit) +
 			//0.5 * Math.max(0, 1 - var)
-			);
+			);*/
 
 			// setFitness(0.7*Math.max(0,-(Math.abs(mean-1))+1));
 			return true;
@@ -128,7 +130,7 @@ public class LinearControllerFitnessCalculator extends OsgiliathService
 			Joint joint = sim.getBipedDataAudit().getJoints().get(i);
 			if (RevoluteJoint.class.isInstance(joint)) {
 				RevoluteJoint j = (RevoluteJoint) joint;
-				j.setMotorSpeed(2 * (float) outputs[index++]);
+				j.setMotorSpeed((float) outputs[index++]);
 				j.enableMotor(true);
 			}
 
@@ -222,13 +224,12 @@ public class LinearControllerFitnessCalculator extends OsgiliathService
 
 	private double[] getInputs() {
 
-		int inputsSize = sim.getBipedDataAudit().getBodies().size() * 3 + 2;
+		int inputsSize = sim.getBipedDataAudit().getBodies().size() * 2 + 2;
 
 		double inputs[] = new double[inputsSize];
 		int genecount = 0;
 		for (Body b : sim.getBipedDataAudit().getBodies()) {
-			inputs[genecount++] = Math.sin(b.getAngle());
-			inputs[genecount++] = Math.cos(b.getAngle());
+			inputs[genecount++] = b.getAngle();			
 			inputs[genecount++] = b.getAngularVelocity();
 		}
 		inputs[genecount++] = sim.getBipedDataAudit().getFootContactA();
@@ -261,11 +262,11 @@ public class LinearControllerFitnessCalculator extends OsgiliathService
 		network = new FeedforwardNetwork();
 
 		// INPUTS
-		// 1 inputs from each body
+		// 1 inputs from each body angle
 		// 1 inputs from each angular velocity
 		// 2 binary inputs from feet contacts
 
-		network.addLayer(new FeedforwardLayer(3 * bodies + 2));
+		network.addLayer(new FeedforwardLayer(2 * bodies + 2));
 
 		// OUTPUTS
 		// 2 bits per motor

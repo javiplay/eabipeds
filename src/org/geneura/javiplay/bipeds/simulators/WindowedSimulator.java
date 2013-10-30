@@ -43,7 +43,7 @@ public class WindowedSimulator extends TestbedTest implements Simulator {
 	@Override
 	public void initTest(boolean arg0) {
 
-		new BipedMorphology(m_world);
+		BipedMorphology.asThreeLinksOneKnee(m_world);
 		simData = new BipedDataAudit(m_world, params);
 		simData.reset();		
 	}

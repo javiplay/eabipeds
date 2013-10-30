@@ -1,5 +1,7 @@
 package org.geneura.javiplay.bipeds.simulators;
 
+import java.text.DecimalFormat;
+
 import org.geneura.javiplay.bipeds.morphology.BipedDataAudit;
 import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
 import org.geneura.javiplay.ctrnn.CTRNN;
@@ -16,14 +18,14 @@ import es.ugr.osgiliath.util.impl.HashMapParameters;
 
 public class CTRNNPendulumSimulator extends TestbedTest {
 
-	
-	
 	CTRNN network;
 	TestbedSettings settings = new TestbedSettings();
-	Joint joint;
+	Joint joint1;
 	private BipedDataAudit simData;
 	private HashMapParameters params;
-	
+	private Joint joint0;
+	private boolean networkEnabled;
+
 	/**
 	 * @return the params
 	 */
@@ -32,39 +34,55 @@ public class CTRNNPendulumSimulator extends TestbedTest {
 	}
 
 	/**
-	 * @param params the params to set
+	 * @param params
+	 *            the params to set
 	 */
 	public void setParams(HashMapParameters params) {
 		this.params = params;
 	}
 
 	@Override
-	public synchronized void step(TestbedSettings settings) {
+	public void step(TestbedSettings settings) {
 		super.step(settings);
-		RevoluteJoint j = (RevoluteJoint) joint;
-		
-		double[] input = { j.getJointAngle(), j.getJointSpeed() };
+		RevoluteJoint j0 = (RevoluteJoint) joint0;
+		RevoluteJoint j1 = (RevoluteJoint) joint1;
+
+		double[] input = { j1.getJointAngle() };
 		network.setInput(input);
-		network.step();
 		
-		
-		
-		double[] out = network.getOuput();
-	
-		
-		float value = (float) out[0];
-		
-		//j.enableMotor(true);
-		//j.setMotorSpeed(value);
-		
-		//addTextLine("Energy:" + simData.getTotalEnergy());
-		addTextLine("Cam Pos:" + getCachedCameraPos());
-		addTextLine("Scale:" + getCachedCameraScale());
-		Color3f color =  new Color3f(1,1,1);
-		Color3f textColor =  new Color3f(1,0,0);
-		Vec2 pos = new Vec2(-1, 1 + j.getJointSpeed()*0.1f);
-		getDebugDraw().drawPoint(pos, 5, color);
-		getDebugDraw().drawString(getDebugDraw().getWorldToScreen(pos).x+10, getDebugDraw().getWorldToScreen(pos).y, "Value:" + value , textColor);
+		if (networkEnabled) {
+			network.step();
+
+			double[] out = network.getOuput();
+			float angle0Error = (float) (((RevoluteJoint) joint0)
+					.getJointAngle() - out[0]);
+//			
+//			float angle1Error = (float) (((RevoluteJoint) joint1)
+//					.getJointAngle() - out[1]);
+			float gain = 2f;
+
+			((RevoluteJoint) joint0).setMotorSpeed(-gain * angle0Error);
+//			((RevoluteJoint) joint1).setMotorSpeed(-gain * angle1Error);
+
+			Vec2 pos;
+			DecimalFormat df = new DecimalFormat("#.##");
+			
+			pos = new Vec2(-1, (float) (1 + out[0] * 0.1));
+			getDebugDraw().drawPoint(pos, 5, Color3f.WHITE);
+			getDebugDraw().drawString(
+					getDebugDraw().getWorldToScreen(pos).x + 10,
+					getDebugDraw().getWorldToScreen(pos).y,
+					"Out 0:" + df.format(out[0]), Color3f.RED);
+
+//			pos = new Vec2(-1.2f, (float) (1 + out[1] * 0.1));
+//			getDebugDraw().drawPoint(pos, 5, Color3f.WHITE);
+//			getDebugDraw().drawString(
+//					getDebugDraw().getWorldToScreen(pos).x + 10,
+//					getDebugDraw().getWorldToScreen(pos).y, 
+//					"Out 1:" + df.format(out[1]), Color3f.RED);
+
+		}
+
 	}
 
 	@Override
@@ -72,81 +90,53 @@ public class CTRNNPendulumSimulator extends TestbedTest {
 		return "Interactive";
 	}
 
-
 	@Override
 	public void initTest(boolean arg0) {
 
 		setCamera(new Vec2(0f, 1.5f), 250f);
 		setTitle(getTestName());
 		BipedMorphology initConfig = new BipedMorphology(getWorld());
-		joint = initConfig.getJoints().get(0);
-		simData = new BipedDataAudit(getWorld(), params);	
+		joint1 = initConfig.getJoints().get(1);
+		joint0 = initConfig.getJoints().get(0);
+		simData = new BipedDataAudit(getWorld(), params);
 		float hz = settings.getSetting(TestbedSettings.Hz).value;
 		float timeStep = 1f / hz;
-		System.out.println("timeStep: " +timeStep);
-		network = new CTRNN(2, timeStep);
-		double[] y0 = {((RevoluteJoint) joint).getJointSpeed(), 0.1};
-		network.reset(y0);
+		System.out.println("timeStep: " + timeStep);
+		
+		network = new CTRNN(1, timeStep);
+		
+		double[] y0 = { ((RevoluteJoint) joint1).getBodyA().getAngle() };
+		// double[] y0 = {((RevoluteJoint) joint1).getJointSpeed()};
+		network.random(y0);
+		
+		networkEnabled = false;
 
 	}
 
-
 	@Override
-	  public void keyPressed(char argKeyChar, int argKeyCode) {
-		float speed = 4;
-		
-		if (PrismaticJoint.class.isInstance(joint)) {
-			 switch (argKeyChar) {
-		      case 's':
-		    	  ((PrismaticJoint)joint).enableMotor(false);
-		        break;
-		      case 'a':
-		    	  ((PrismaticJoint)joint).setMotorSpeed(-speed);
-		    	  ((PrismaticJoint)joint).enableMotor(true);
-		        break;
-		      case 'd':
-		    	  ((PrismaticJoint)joint).setMotorSpeed(speed);
-		    	  ((PrismaticJoint)joint).enableMotor(true);
-		        
-		        break;
-		      case 'w':
-		    	  ((PrismaticJoint)joint).setMotorSpeed(0);
-		    	  ((PrismaticJoint)joint).enableMotor(true);
-		        
-		        break;
-		    }
-		}
-		if (RevoluteJoint.class.isInstance(joint)) {
-			 switch (argKeyChar) {
-		      case 's':
-		    	  ((RevoluteJoint)joint).enableMotor(false);
-		        break;
-		      case 'a':
-		    	  ((RevoluteJoint)joint).setMotorSpeed(-speed);
-		    	  ((RevoluteJoint)joint).enableMotor(true);
-		        break;
-		      case 'd':
-		    	  ((RevoluteJoint)joint).setMotorSpeed(speed);
-		    	  ((RevoluteJoint)joint).enableMotor(true);
-		        
-		        break;
-		      case 'w':
-		    	  ((RevoluteJoint)joint).setMotorSpeed(0);
-		    	  ((RevoluteJoint)joint).enableMotor(true);		        
-		        break;
-		    }
-		}
-	
-	   
-	  }
+	public void keyPressed(char argKeyChar, int argKeyCode) {
 
+		switch (argKeyChar) {
+		case 's':
+			networkEnabled = true;
+			((RevoluteJoint) joint0).enableMotor(true);
+			//((RevoluteJoint) joint1).enableMotor(true);
+			break;
+		case 'f':
+			networkEnabled = true;
+			((RevoluteJoint) joint0).enableMotor(false);
+			//((RevoluteJoint) joint1).enableMotor(true);
+			break;
+			
+
+		}
+
+	}
 
 	@Override
 	public void reset() {
 
 		super.reset();
-
-		
 
 	}
 

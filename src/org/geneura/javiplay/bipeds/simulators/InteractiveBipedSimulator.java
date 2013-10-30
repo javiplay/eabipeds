@@ -1,5 +1,9 @@
 package org.geneura.javiplay.bipeds.simulators;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+
 import org.geneura.javiplay.bipeds.morphology.BipedDataAudit;
 import org.geneura.javiplay.bipeds.morphology.BipedMorphology;
 import org.jbox2d.dynamics.joints.Joint;
@@ -15,6 +19,7 @@ public class InteractiveBipedSimulator extends TestbedTest {
 
 	
 
+	PrintWriter writer;
 	Joint joint;
 	private BipedDataAudit simData;
 	private HashMapParameters params;
@@ -24,7 +29,10 @@ public class InteractiveBipedSimulator extends TestbedTest {
 	 */
 	public HashMapParameters getParams() {
 		return params;
+		
 	}
+	
+	
 
 	/**
 	 * @param params the params to set
@@ -37,6 +45,8 @@ public class InteractiveBipedSimulator extends TestbedTest {
 	public synchronized void step(TestbedSettings settings) {
 		super.step(settings);
 		addTextLine("Energy:" + simData.getTotalEnergy());
+		writer.println(simData.getBodies().get(0).getAngle() + " " + simData.getBodies().get(1).getAngle() + " " +
+		simData.getFootContactA() + " " + simData.getFootContactB());
 	}
 
 	@Override
@@ -52,13 +62,28 @@ public class InteractiveBipedSimulator extends TestbedTest {
 		BipedMorphology initConfig = new BipedMorphology(getWorld());
 		joint = initConfig.getJoints().get(0);
 		simData = new BipedDataAudit(getWorld(), params);	
-
+		
+		try {
+			writer = new PrintWriter("datos","UTF-8");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
 	@Override
 	  public void keyPressed(char argKeyChar, int argKeyCode) {
-		float speed = 4;
+		float speed = 4; 
+		switch (argKeyChar) {
+	      case 'f':
+	    	 writer.flush();
+	    	 writer.close();
+	        break;
+		}
 		
 		if (PrismaticJoint.class.isInstance(joint)) {
 			 switch (argKeyChar) {
@@ -114,5 +139,10 @@ public class InteractiveBipedSimulator extends TestbedTest {
 		
 
 	}
+	
+	
+	
+	
+	
 
 }

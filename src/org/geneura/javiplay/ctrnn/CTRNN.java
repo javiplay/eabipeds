@@ -29,21 +29,40 @@ public class CTRNN {
 		this.input = input.clone();
 	}
 
+	public void setWeight(double[][] weight) {
+		this.weight = weight.clone();		
+	}
 	
-	public void reset(double[] y0) {
+	public void setBias(double[] bias) {
+		this.bias = bias.clone();
+	}
+	
+	public void setTau(double[] tau) {
+		this.tau = tau.clone();
+	}
+	
+	public void setState(double[] y0) {
+		y = y0.clone();		
+	}
+	
+	
+	public void random(double[] y0) {
 		
 				
 		Random rand = new Random();
+
 		for (int i=0; i<n; i++) {
-			tau[i] = 0.017 + rand.nextDouble()*2; // 0.016 < tau <= 1
-			y[i] = y0[i];
-		}
 		
-		for (int i=0; i<n; i++) {
+			tau[i] = 0.017 + rand.nextDouble()*2; // 0.016 < tau <= 1
+			
+			y[i] = y0[i];
+		
 			for (int j=0; j<n; j++) {
 				weight[j][i] = rand.nextDouble()*20-10; // -10 <= w <= 10
-			}	
+			}
 		}
+		
+		
 		
 	}
 
